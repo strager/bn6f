@@ -86,12 +86,6 @@ def create_image_for_map(tile_set, layer_map_datas: typing.Sequence[bytes], map_
             tile_x = tile_index * TILE_WIDTH % tile_set_rgba.width
             tile_y = 0
             tile_y = tile_index * TILE_WIDTH // tile_set_rgba.width * TILE_HEIGHT
-            #tile_y = tile_index * TILE_HEIGHT * (tile_index * TILE_WIDTH // tile_set_rgba.width)
-            #x = (offset // 2) * TILE_WIDTH % map.width
-            #y = (offset // 2) * TILE_WIDTH // tile_set_rgba.width * TILE_HEIGHT
-            if tile_index > 0:
-                pass
-                #print(f"${offset:04x}: placing {tile_index:04x} at <{x},{y}> (from <{tile_x},{tile_y}>)")
             map.alpha_composite(tile_set_rgba, (x, y), (tile_x, tile_y, tile_x + TILE_WIDTH, tile_y + TILE_HEIGHT))
             x += TILE_WIDTH
             if x >= map.width:
