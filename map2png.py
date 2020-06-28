@@ -15,12 +15,12 @@ def main():
         temp_dir = pathlib.Path(temporary_directory)
         with open("bn6f.gba", "rb") as rom_file:
             rom_file.seek(address_to_rom_offset(0x8032a20))
-            area_header = rom_file.read(6 * 4)
-            (tile_set_address, palette_address, map_address, _unknown_c, _unknown_10, _unknown_14) = struct.unpack("<IIIIII", area_header)
+            area_header = rom_file.read(3 * 4)
+            (tile_set_address, palette_address, map_address) = struct.unpack("<III", area_header)
 
             rom_file.seek(address_to_rom_offset(map_address))
             map_header = rom_file.read(12)
-            (_unknown_0, map_data_start_offset, map_compressed_size) = struct.unpack("<III", map_header)
+            (map_width, map_height, _unknown_2, _unknown_3, map_data_start_offset, map_compressed_size) = struct.unpack("<BBBBII", map_header)
             rom_file.seek(map_data_start_offset - 12, os.SEEK_CUR)
             map_compressed_data = rom_file.read(map_compressed_size)
             map_data = decompress(map_compressed_data)
@@ -52,7 +52,7 @@ def main():
             ])
 
             tile_set = PIL.Image.open(tile_set_png_path)
-            create_image_for_map(tile_set=tile_set, map_data=map_data).save("acdc.png")
+            create_image_for_map(tile_set=tile_set, map_data=map_data, map_width=map_width, map_height=map_height).save("acdc.png")
 
 def decompress(compressed_data: bytes) -> bytes:
     with tempfile.TemporaryDirectory() as temporary_directory:
@@ -66,8 +66,8 @@ def decompress(compressed_data: bytes) -> bytes:
 TILE_WIDTH = 8
 TILE_HEIGHT = 8
 
-def create_image_for_map(tile_set, map_data: bytes):
-    map = PIL.Image.new("RGBA", (1024+32, 2048))
+def create_image_for_map(tile_set, map_data: bytes, map_width: int, map_height: int):
+    map = PIL.Image.new("RGBA", (map_width * TILE_WIDTH, map_height * TILE_HEIGHT))
     x = 0
     y = 0
     for offset in range(0, len(map_data), 2):
