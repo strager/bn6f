@@ -15,7 +15,7 @@ def main():
     with tempfile.TemporaryDirectory() as temporary_directory:
         temp_dir = pathlib.Path(temporary_directory)
         with open("bn6f.gba", "rb") as rom_file:
-            rom_file.seek(address_to_rom_offset(0x8032a20+0x0))
+            rom_file.seek(address_to_rom_offset(0x8032a20+0xc*4))
             area_header = rom_file.read(3 * 4)
             (tile_set_address, palette_address, maps_address) = struct.unpack("<III", area_header)
 
@@ -59,7 +59,6 @@ def main():
             temp_tile_set.save(temp_tile_set_png_path, transparency=0)
 
             tile_set = PIL.Image.open(temp_tile_set_png_path)
-            print(tile_set.mode, tile_set.info)
             create_image_for_map(tile_set=tile_set, layer_map_datas=[bottom_layer_maps_data, top_layer_maps_data], map_width=map_width, map_height=map_height).save("acdc.png")
 
 def decompress(compressed_data: bytes) -> bytes:
