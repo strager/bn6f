@@ -1,0 +1,200 @@
+Decoding the tile map:
+
+dd if=bn6f.gba skip=$((0x4FF308+4)) count=$((256*2)) bs=1 of=acdc-tiles.pal
+
+dd if=bn6f.gba skip=$((0x4FAFCC)) count=$((0x84FF4AC-0x4FAFCC)) bs=1 of=acdc-tiles.8bpp.lz.raw
+dd if=acdc-tiles.8bpp.lz.raw of=acdc-tiles.8bpp.lz skip=1 bs=$((0x18))
+./tools/gbagfx/gbagfx acdc-tiles.8bpp.lz acdc-tiles.8bpp
+
+./tools/gbagfx/gbagfx acdc-tiles.8bpp acdc-tiles.png -palette acdc-tiles.pal -width 16
+
+
+dd if=bn6f.gba skip=$((0x4FF4AC+0xc)) count=$((0x500F1C - (0x4FF4AC+0xc))) bs=1 of=acdc.map.lz
+./tools/gbagfx/gbagfx acdc.map.lz acdc.map
+
+
+byte_84FF4AC:
++0: ???
++4: ????
++8: size of compressed data in bytes
+
+
+off_8032A20::
+	.word byte_84FAFCC // tile data (dompressed, 8bpp)
+	.word byte_84FF308 // palette data (uncompressed, 16bpp)
+	.word byte_84FF4AC // map data (compressed, 16bpt)
+	.word dword_8500F1C // ??? (compressed)
+	.word byte_8503098
+	.word byte_850323C
+
+
+
+break on 02011ee4 (02011ee0 + 4)
+
+
+Format of comp_84C3C90.bin:
++0x10: offset of pallete +- 4
++0x14: sizish of comp_84C3C90?
++0x18: sizish of comp_84C3C90?
++0x20: size of tile set?
+
+
+Source: https://forums.therockmanexezone.com/bn-sprite-archive-format-revised-t5403.html
+> All BN sprite archives look roughly like this:
+> - Metadata header
+> - Animation 0
+> ----- Frame 0
+> --------- Tileset
+> --------- Palettes
+> ------------- Palette 0
+> ------------- ...
+> ------------- Palette n (n<16)
+> --------- Mini-animations
+> ------------- Mini-animation 0
+> ----------------- Mini-frame 0
+> ----------------- ...
+> ----------------- Mini-frame n (n<256)
+> ------------- Mini-animation 1
+> ------------- ...
+> ------------- Mini-animation n (n<256)
+> --------- Objects
+> ------------- Object list 0
+> ----------------- Object 0
+> ----------------- ...
+> ----------------- Object n (n<256)
+> ------------- Object list 1
+> ------------- ...
+> ------------- Object list n (n<256)
+> --------- Animation data
+> ----- Frame 1
+> ----- ...
+> ----- Frame n (n<256)
+> - Animation 1
+> - ...
+> - Animation n (n<256)
+> 
+> Furthermore, the binary file structure looks like this:
+> - Metadata header
+> - Animation pointers
+> - Frame data
+> - Tileset blocks
+> - Palette blocks
+> - Frame-specific blocks
+> ----- Mini-animations
+> ----- Object lists
+> 
+> Each sprite archive starts with a 4-byte metadata header. This block is not known to be used by any MMBN game and is skipped when loading animations.
+> 
+> Metadata header (4 bytes):
+> +0x00: (byte) amount of tiles in the biggest tileset in the sprite archive
+> +0x01: (byte) constant 0x00 ?
+> +0x02: (byte) constant 0x01 ?
+> +0x03: (byte) number of animations in the sprite archive
+> 
+> "Amount of tiles" basically equals ceil(size of bitmap data / 0x20).
+> 
+> ---
+> 
+> Directly after that is the animation pointer table. Each animation pointer is 32-bit, and all pointers are relative to the start of the table.
+> 
+> An animation consists of at least one frame. Each frame entry is 20 bytes long and has the structure below. All pointers are relative to the start of the animation pointer table.
+> 
+> Frame entry (20 bytes):
+> +0x00: (int) pointer to tileset
+> +0x04: (int) pointer to palettes
+> +0x08: (int) pointer to mini-animations
+> +0x0C: (int) pointer to object lists
+> +0x10: (byte) delay
+> +0x11: (byte) constant 0x00 ?
+> +0x12: (byte) flags
+> +0x13: (byte) constant 0x00 ?
+> 
+> Frame flags:
+> 0x80: end animation
+> 0x40: loop animation
+> 
+> The last frame in the animation must have bit 0x80 set in its flags; this marks the end of an animation. Additionally, if bit 0x40 is set in the flags of the last frame, the animation will restart from the first frame; otherwise it simply stays on the last frame. Note: if an animation loops, the last frame has flags 0x80 | 0x40 = 0xC0.
+> 
+> ---
+> 
+> Each tileset starts with its size, which is then followed by the raw 4bpp indexed bitmap data.
+> 
+> Tileset (4 + n bytes):
+> +0x00: (int) size of bitmap data
+> +0x04: (byte[n]) bitmap data (4bpp indexed)
+> 
+> The bitmap data can technically, but should not exceed 8160 bytes, as 255 is the maximum for the amount of tiles in the metadata block. Different frames can and often will share the same tileset block.
+> 
+> ---
+> 
+> A palette block starts with its size (always 0x20) and is followed by at least 1 and at most 16 palettes. Unfortunately there is no way to tell how many palettes there are. The best approach is probably to make a list of all pointers that exist in the sprite archive, and then loading palettes until the next pointer is reached. Each palette consists of 16 colors with RGB555 color depth.
+> 
+> Palettes (4 + n * 32 bytes):
+> +0x00: (int) constant 0x20
+> +0x04: (short[n][16]) palettes of 16 RGB555 colors
+> 
+> Similar to tilesets, palette blocks are usually shared by almost all frames in the archive, since each frame can only use one palette.
+> 
+> ---
+> 
+> The mini-animations are a bit special. Essentially, each frame of animation itself can be animated (yo dawg) by swapping out object lists. Each frame must have at least one mini-animation, which for the vast majority of sprites is just a static object list. Mini-animations are rarely used; in fact, only mugshots are known to make use of them. The default mini-animation is the first one.
+> 
+> A mini-animations data block begins with a pointer table of 32-bit pointers to mini-animations, relative to the start of the table. Each mini-animation consists of at least one mini-frame entry of 3 bytes.
+> 
+> Mini-frame entry (3 bytes):
+> +0x00: (byte) index of object list to use
+> +0x01: (byte) delay
+> +0x02: (byte) flags
+> 
+> The flags work the same way as for full frame entries; 0x80 ends an animation, 0x40 loops it. Last mini-frame has value 0xC0 if it loops. Additionally, the last mini-frame is followed by three bytes 0xFF 0xFF 0xFF.
+> 
+> ---
+> 
+> The object lists work in conjunction with mini-animations. A mini-animation swaps out object lists in OAM memory to achieve motion. Every frame of animation must have at least one object list, which is usually used for the default (static) mini-animation.
+> 
+> Like the mini-animations, an object list block begins with a pointer table of 32-bit pointers to object lists, relative to the start of the table. Each object list consists of any number of object entries of 5 bytes. It can technically be empty, but this is not recommended.
+> 
+> Object entry (5 bytes):
+> +0x00: (byte) starting tile number
+> +0x01: (sbyte) X-coordinate of upper left corner
+> +0x02: (sbyte) Y-coordinate of upper left corner
+> +0x03: (byte) flags 1
+> +0x04: (byte) flags 2
+> 
+> There are two packed bytes in an object entry that contain a number of values.
+> 
+> Flags 1:
+> bits 0-1: object size
+> bits 2-5: unused
+> bit 6: horizontal-flip object
+> bit 7: vertical-flip object
+> 
+> Flags 2:
+> bits 0-1: object shape
+> bits 2-3: unused
+> bits 4-7: palette index
+> 
+> If the bits for horizontal-flip or vertical-flip are enabled, the object is shown horizontally and/or vertically flipped on the GBA screen.
+> 
+> Object shape and object size together determine the dimensions of the object. 8x8 tiles are loaded from left to right, from top to bottom, starting from the tile set as the starting tile in the object entry.
+> 
+> size 0, shape 0: 8x8
+> size 0, shape 1: 16x8
+> size 0, shape 2: 8x16
+> size 1, shape 0: 16x16
+> size 1, shape 1: 32x8
+> size 1, shape 2: 8x32
+> size 2, shape 0: 32x32
+> size 2, shape 1: 32x16
+> size 2, shape 2: 16x32
+> size 3, shape 0: 64x64
+> size 3, shape 1: 64x32
+> size 3, shape 2: 32x64
+> 
+> A palette index refers to the palette block that this frame uses, not the palettes currently loaded in VRAM. All objects in an object list MUST use the same palette, and therefore the same goes for each frame of animation!
+> 
+> Each object entry is converted to a GBA OBJ sprite and copied to OAM memory. An object list is terminated by the five bytes 0xFF 0xFF 0xFF 0xFF 0xFF.
+> 
+> ---
+> 
+> Junk data may occur in a sprite archive. The data blocks for mini-animations and object lists are always padded to a multiple of 4. For all sprite archives in the official games, they are actually always padded to the next (!) multiple of 4 (even when it is not necessary to add padding), and the extra bytes are junk data seemingly taken from the rest of the file. The pattern to the junk data has not been uncovered, but since it goes unused completely it doesn't really matter.
