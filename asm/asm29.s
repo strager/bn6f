@@ -3,15 +3,16 @@
 ho_80A4984:
 	push {lr}
 	ldr r7, off_80A49AC // =byte_80A3A44
-	ldrb r1, [r5,#4]
+	ldrb r1, [r5,#oOverworldMapObject_Unk_04]
 	mov r2, #0x10
 	mul r1, r2
 	add r7, r7, r1
+        // if Unk_04 is 0x73, then r7 is now 0x080a4174
 	ldr r0, off_80A499C // =jt_80A49A0 
-	ldrb r1, [r5,#8]
+	ldrb r1, [r5,#oOverworldMapObject_Unk_08]
 	ldr r0, [r0,r1]
 	mov lr, pc
-	bx r0
+	bx r0 // branch to event_80A4A08, for example
 	pop {pc}
 	.balign 4, 0
 off_80A499C: .word jt_80A49A0

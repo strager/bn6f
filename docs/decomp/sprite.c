@@ -703,6 +703,8 @@ void __fastcall sprite_setPallete(int pallete)
 {
     int v1; // r5
 
+    // (v1+2) is TypeAndSpriteOffset
+    // (v1+2)>>SpriteOffset is SpriteOffset
     *(16 * (*(v1 + 2) >> 4) + v1 + 4) = pallete;
 }
 

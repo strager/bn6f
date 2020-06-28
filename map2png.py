@@ -75,6 +75,38 @@ def main():
                 tile_set = PIL.Image.open(temp_tile_set_png_path)
                 area_image = create_image_for_map(tile_set=tile_set, layer_map_datas=[bottom_layer_maps_data, top_layer_maps_data], map_width=map_width, map_height=map_height)
                 output_file_name = f"area-{table_start_address:08x}-{area_number}.png"
+
+                def game_coordinate_to_screen_coordinates(map_width: int, map_height: int, game_x: int, game_y: int, game_z: int) -> typing.Tuple[float, float]:
+                    # TODO(strager): Use game_z.
+                    ISO_TILE_WIDTH = 64.0/32.0
+                    ISO_TILE_HEIGHT = 32.0/32.0
+                    game_tile_x = game_x / (1<<16)
+                    game_tile_y = game_y / (1<<16)
+                    screen_start_x = map_width*TILE_WIDTH/2
+                    screen_start_y = map_height*TILE_HEIGHT/2
+                    screen_x = game_tile_x * (ISO_TILE_WIDTH / 2) + game_tile_y * (ISO_TILE_WIDTH / 2) + screen_start_x
+                    screen_y = (
+                        -(game_tile_x * (ISO_TILE_HEIGHT / 2) - game_tile_y * (ISO_TILE_HEIGHT / 2)) + screen_start_y
+                    )
+                    return (screen_x, screen_y)
+
+                rom_file.seek(address_to_rom_offset(0x0804e74c))
+                while True:
+                    sprite_descriptor = rom_file.read(5 * 4)
+                    (sprite_kind, sprite_index, _unused_1, _unused_2, sprite_x, sprite_y, sprite_z, sprite_unknown_4) = struct.unpack("<BBBBiiiI", sprite_descriptor)
+                    if sprite_kind == 0xff:
+                        break
+                    #print(f"\t.byte {sprite_kind:#02x}")
+                    #print(f"\t.byte {sprite_index:#02x}")
+                    #print(f"\t.byte {_unused_1:#02x}, {_unused_2:#02x}")
+                    #print(f"\t.word {sprite_x:#08x}, {sprite_y:#08x}, {sprite_z:#08x}")
+                    #print(f"\t.word {sprite_unknown_4:#08x}\n")
+                    #if sprite_z == 0:
+                    (x, y) = game_coordinate_to_screen_coordinates(map_width=map_width, map_height=map_height, game_x=sprite_x, game_y=sprite_y, game_z=sprite_z)
+                    for xi in range(10):
+                        for yi in range(10):
+                            area_image.putpixel((int(x + xi), int(y + yi)), (0xff, 0x00, 0xff, 0xff))
+
                 area_image.save(output_file_name)
                 print(f"wrote: {output_file_name}")
 
