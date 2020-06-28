@@ -18,8 +18,10 @@ def main():
             map_compressed_data = rom_file.read(map_compressed_size)
             map_data = decompress(map_compressed_data)
 
-            rom_file.seek(0x4ff308+4)
-            palette = rom_file.read(256 * 2)
+            rom_file.seek(0x4ff308)
+            palette_header = rom_file.read(4)
+            (palette_size,) = struct.unpack("<I", palette_header)
+            palette = rom_file.read(palette_size)
 
             rom_file.seek(0x4fafcc)
             tile_set_header = rom_file.read(20)
