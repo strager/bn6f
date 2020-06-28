@@ -1224,10 +1224,10 @@ off_8032FE4:: .word sub_8030628+1
 	.word sub_8030628+1
 	.word sub_8030808+1
 	.word sub_803086C+1
-off_8032FFC:: .word sub_8030628+1
+off_8032FFC:: .word sub_8030628+1 // Central town?
 	.word sub_8030808+1
 	.word sub_803086C+1
-	.word sub_8030628+1
+	.word sub_8030628+1 //
 	.word sub_8030808+1
 	.word sub_803086C+1
 	.word sub_8030628+1

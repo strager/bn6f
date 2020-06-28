@@ -29,6 +29,7 @@ CentralTown_EnterMapGroup:
 	lsl r1, r1, #2
 	ldr r0, off_804E694 // =off_804E698 
 	ldr r0, [r0,r1]
+        // r0 is now off_804E698 (for example)
 	bl uncompSprite_8002906
 	bl chatbox_uncompMapTextArchives_803FD08 // () -> int
 	bl CentralTown_SpawnMapObjectsForMap
@@ -92,12 +93,13 @@ CentralTown_SpawnMapObjectsForMap:
 	lsl r0, r0, #2
 	ldr r1, =off_804E738
 	ldr r0, [r1,r0]
+        // r0 is now byte_804E74C for example?
 	bl SpawnObjectsFromList // (void *a1) -> int
 	pop {pc}
 	.pool // off_804E734
 off_804E738:
 	// <endpool>
-	.word byte_804E74C
+	.word byte_804E74C // list of object spawns used by SpawnObjectsFromList
 	.word byte_804E87C
 	.word dword_804E8D0
 	.word dword_804E8D4

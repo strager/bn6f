@@ -21,8 +21,8 @@ def main():
     with tempfile.TemporaryDirectory() as temporary_directory:
         temp_dir = pathlib.Path(temporary_directory)
         with open("bn6f.gba", "rb") as rom_file:
-            table_start_address = 0x8032a74
-            for area_number in range(3):
+            table_start_address = 0x8032a20
+            for area_number in [2]:
                 print(f"=== area #{area_number} in table 0x{table_start_address:08x} ===")
 
                 rom_file.seek(address_to_rom_offset(table_start_address + 0xc*area_number))
@@ -74,7 +74,9 @@ def main():
 
                 tile_set = PIL.Image.open(temp_tile_set_png_path)
                 area_image = create_image_for_map(tile_set=tile_set, layer_map_datas=[bottom_layer_maps_data, top_layer_maps_data], map_width=map_width, map_height=map_height)
-                area_image.save(f"area-{table_start_address:08x}-{area_number}.png")
+                output_file_name = f"area-{table_start_address:08x}-{area_number}.png"
+                area_image.save(output_file_name)
+                print(f"wrote: {output_file_name}")
 
 def decompress(compressed_data: bytes) -> bytes:
     with tempfile.TemporaryDirectory() as temporary_directory:

@@ -1,11 +1,11 @@
 
 SpawnObjectJumptable:
-	.word SpawnOWPlayerObject+1
-	.word object_spawnType1+1
-	.word SpawnOverworldNPCObject+1
-	.word object_spawnType3+1
-	.word object_spawnType4+1
-	.word SpawnOverworldMapObject+1
+	.word SpawnOWPlayerObject+1 // 0
+	.word object_spawnType1+1 // 1
+	.word SpawnOverworldNPCObject+1 // 2
+	.word object_spawnType3+1 // 3
+	.word object_spawnType4+1 // 4
+	.word SpawnOverworldMapObject+1 // 5
 FreeObjectJumptable:
 	.word FreeOWPlayerObject+1
 	.word object_freeMemory+1
@@ -2744,8 +2744,8 @@ SpawnOverworldMapObject:
 .foundFreeMapObject
 	orr r2, r1
 	str r2, [r0,r3]
-	mov r0, #9
-	strb r0, [r5]
+	mov r0, #OBJECT_FLAG_STOP_SPRITE_UPDATE | OBJECT_FLAG_ACTIVE
+	strb r0, [r5,#oOverworldMapObject_Flags]
 	pop {r0-r4,r6}
 	strb r0, [r5,#oOverworldMapObject_Index]
 	str r1, [r5,#oOverworldMapObject_X]

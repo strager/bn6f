@@ -14152,10 +14152,13 @@ char *__fastcall initMapTilesState_803037c(signed int MapGroup, int MapNumber)
     dword_200BE88 = *v5;
     dword_200BE8C = v5[1];
     dword_200BE90 = v5[2];
+    // tile maps header
     result = *(dword_200BE78 + 8);
     eMapTilesState200be70 = *result;
     byte_200BE71 = result[1];
+    // palettes header
     dword_200BE80 = *(dword_200BE78 + 4);
+    // tile set header
     dword_200BE84 = *dword_200BE78;
     dword_200BE7C = eDecompBuffer2013A00;
     return result;

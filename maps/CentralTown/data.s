@@ -1,11 +1,13 @@
 
+// list of object spawns used by SpawnObjectsFromList
 byte_804E74C::
+        // Central Town map 0(?)
 	.byte 0x5
-	.balign 4, 0
-	.word 0xff7c0000
-	.word 0xffe80000
-	.word 0
-	.word 0x73
+	.balign 4, 0 // first arg
+	.word 0xff7c0000 // second arg: X
+	.word 0xffe80000 // third arg: Y
+	.word 0 // fourth arg: Z
+	.word 0x73 // fifth arg: Unk_04
 
 	.byte 0x5
 	.balign 4, 0

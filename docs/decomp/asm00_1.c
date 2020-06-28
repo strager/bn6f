@@ -1434,18 +1434,26 @@ int __fastcall SpawnOverworldMapObject(int result, int a2, int a3, int a4)
 		if ( !(v8 & v4) )
 			break;
 		v4 = __ROR4__(v4, 1);
-		v5 += 30;
-		if ( ++v6 >= 56 )
+		v5 += oOverworldMapObject_Size;
+		if ( ++v6 >= NUM_OVERWORLD_MAP_OBJECTS )
 			return result;
 	}
 	eActiveOverworldMapObjectsBitfield[v7] = v8 | v4;
-	*v5 = 9;
+
+	// flags8 Flags // loc=0x0
+	*v5 = OBJECT_FLAG_STOP_SPRITE_UPDATE | OBJECT_FLAG_ACTIVE;
+        // u8 Index // loc=0x1
 	*(v5 + 1) = result;
+	// s32 X // loc=0xc
 	v5[3] = v9;
+	// s32 Y // loc=0x10
 	v5[4] = v10;
+	// s32 Z // loc=0x14
 	v5[5] = v11;
+	// u32 Unk_04 // loc=0x4
 	v5[1] = v12;
 	result = 0;
+	// u32 Unk_08 // loc=0x8
 	v5[2] = 0;
 	return result;
 }
