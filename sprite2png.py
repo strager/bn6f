@@ -7,6 +7,8 @@ import tempfile
 import typing
 
 gbagfx_exe = pathlib.Path(__file__).parent / "tools" / "gbagfx" / "gbagfx"
+TILE_WIDTH = 8
+TILE_HEIGHT = 8
 
 
 def address_to_rom_offset(address: int) -> int:
@@ -45,7 +47,8 @@ def main():
             (palette_size,) = unpack_at_offset(animation_table_rom_offset + palettes_animoffset, "<I")
             palette = rom_file.read(palette_size)
 
-            tile_set_png_path = "tile-set.png"
+
+            tile_set_png_path = temp_dir / "tile-set.png"
             tile_set_data_path = temp_dir / "tile-set.4bpp"
             tile_set_data_path.write_bytes(tile_set_4bpp)
             palette_path = temp_dir / "tile-set.pal"
@@ -56,9 +59,51 @@ def main():
                 str(tile_set_png_path),
                 "-palette",
                 str(palette_path),
-                "-width", "16",
+                "-width", "8",
             ])
-            print(f"wrote {tile_set_png_path}")
+
+            temp_tile_set_png_path = temp_dir / "temp-tile-set.png"
+            temp_tile_set = PIL.Image.open(tile_set_png_path)
+            temp_tile_set.save(temp_tile_set_png_path, transparency=0)
+            tile_set = PIL.Image.open(temp_tile_set_png_path).convert("RGBA")
+
+            object_list_rom_offset = animation_table_rom_offset + object_lists_animoffset
+            # _objoffset variables hold pointers relative to object_list_rom_offset.
+            (object_list_objoffset,) = unpack_at_offset(object_list_rom_offset, "<I")
+            rom_file.seek(object_list_rom_offset + object_list_objoffset)
+            (tile_index, x, y, flags) = unpack("<BbbH")
+            print(tile_index, x, y, flags)
+            object_size = (flags >> 0) & 3
+            h_flip = (flags & (1<<6)) != 0
+            v_flip = (flags & (1<<7)) != 0
+            object_shape = (flags >> 8) & 3
+            object_palette_index = (flags >> 12)
+            print(object_size, h_flip, v_flip, object_shape, object_palette_index)
+
+            size_and_shape_to_width_and_height = {
+                (0, 0): (8, 8),
+                (0, 1): (16, 8),
+                (0, 2): (8, 16),
+                (1, 0): (16, 16),
+                (1, 1): (32, 8),
+                (1, 2): (8, 32),
+                (2, 0): (32, 32),
+                (2, 1): (32, 16),
+                (2, 2): (16, 32),
+                (3, 0): (64, 64),
+                (3, 1): (64, 32),
+                (3, 2): (32, 64),
+            }
+
+            sprite = PIL.Image.new("RGBA", (256, 256))
+            (object_width, object_height) = size_and_shape_to_width_and_height[(object_size, object_shape)]
+            for yi in range(0, object_height, TILE_HEIGHT):
+                for xi in range(0, object_width, TILE_WIDTH):
+                    sprite.alpha_composite(tile_set, (x + xi + 128, y + yi + 128), (0, tile_index * TILE_HEIGHT, TILE_WIDTH, tile_index * TILE_HEIGHT + TILE_HEIGHT))
+                    tile_index += 1
+            sprite_png_path = pathlib.Path("sprite.png")
+            sprite.save(sprite_png_path)
+            print(f"wrote {sprite_png_path}")
 
 if __name__ == "__main__":
     main()
