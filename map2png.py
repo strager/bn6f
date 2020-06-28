@@ -4,6 +4,7 @@ import pathlib
 import struct
 import subprocess
 import tempfile
+import typing
 
 gbagfx_exe = pathlib.Path(__file__).parent / "tools" / "gbagfx" / "gbagfx"
 
@@ -14,16 +15,18 @@ def main():
     with tempfile.TemporaryDirectory() as temporary_directory:
         temp_dir = pathlib.Path(temporary_directory)
         with open("bn6f.gba", "rb") as rom_file:
-            rom_file.seek(address_to_rom_offset(0x8032a20))
+            rom_file.seek(address_to_rom_offset(0x8032a20+0x0))
             area_header = rom_file.read(3 * 4)
-            (tile_set_address, palette_address, map_address) = struct.unpack("<III", area_header)
+            (tile_set_address, palette_address, maps_address) = struct.unpack("<III", area_header)
 
-            rom_file.seek(address_to_rom_offset(map_address))
-            map_header = rom_file.read(12)
-            (map_width, map_height, _unknown_2, _unknown_3, map_data_start_offset, map_compressed_size) = struct.unpack("<BBBBII", map_header)
-            rom_file.seek(map_data_start_offset - 12, os.SEEK_CUR)
-            map_compressed_data = rom_file.read(map_compressed_size)
-            map_data = decompress(map_compressed_data)
+            rom_file.seek(address_to_rom_offset(maps_address))
+            maps_header = rom_file.read(12)
+            (map_width, map_height, _unknown_2, _unknown_3, maps_data_start_offset, maps_compressed_size) = struct.unpack("<BBBBII", maps_header)
+            rom_file.seek(maps_data_start_offset - 12, os.SEEK_CUR)
+            maps_compressed_data = rom_file.read(maps_compressed_size)
+            maps_data = decompress(maps_compressed_data)
+            bottom_layer_maps_data = maps_data[:map_width * map_height * 2]
+            top_layer_maps_data = maps_data[map_width * map_height * 2:]
 
             rom_file.seek(address_to_rom_offset(palette_address))
             palette_header = rom_file.read(4)
@@ -51,8 +54,13 @@ def main():
                 "-width", "16",
             ])
 
-            tile_set = PIL.Image.open(tile_set_png_path)
-            create_image_for_map(tile_set=tile_set, map_data=map_data, map_width=map_width, map_height=map_height).save("acdc.png")
+            temp_tile_set_png_path = temp_dir / "temp-tile-set.png"
+            temp_tile_set = PIL.Image.open(tile_set_png_path)
+            temp_tile_set.save(temp_tile_set_png_path, transparency=0)
+
+            tile_set = PIL.Image.open(temp_tile_set_png_path)
+            print(tile_set.mode, tile_set.info)
+            create_image_for_map(tile_set=tile_set, layer_map_datas=[bottom_layer_maps_data, top_layer_maps_data], map_width=map_width, map_height=map_height).save("acdc.png")
 
 def decompress(compressed_data: bytes) -> bytes:
     with tempfile.TemporaryDirectory() as temporary_directory:
@@ -66,31 +74,31 @@ def decompress(compressed_data: bytes) -> bytes:
 TILE_WIDTH = 8
 TILE_HEIGHT = 8
 
-def create_image_for_map(tile_set, map_data: bytes, map_width: int, map_height: int):
+def create_image_for_map(tile_set, layer_map_datas: typing.Sequence[bytes], map_width: int, map_height: int):
+    tile_set_rgba = tile_set.convert("RGBA")
     map = PIL.Image.new("RGBA", (map_width * TILE_WIDTH, map_height * TILE_HEIGHT))
-    x = 0
-    y = 0
-    for offset in range(0, len(map_data), 2):
-        (code,) = struct.unpack_from("<H", map_data, offset)
-        tile_index = code & 0xfff
-        tile_x = tile_index * TILE_WIDTH % tile_set.width
-        tile_y = 0
-        tile_y = tile_index * TILE_WIDTH // tile_set.width * TILE_HEIGHT
-        #tile_y = tile_index * TILE_HEIGHT * (tile_index * TILE_WIDTH // tile_set.width)
-        tile = tile_set.crop((tile_x, tile_y, tile_x + TILE_WIDTH, tile_y + TILE_HEIGHT))
-        #x = (offset // 2) * TILE_WIDTH % map.width
-        #y = (offset // 2) * TILE_WIDTH // tile_set.width * TILE_HEIGHT
-        if tile_index > 0:
-            pass
-            #print(f"${offset:04x}: placing {tile_index:04x} at <{x},{y}> (from <{tile_x},{tile_y}>)")
-        map.paste(tile, (x, y, x + TILE_WIDTH , y + TILE_HEIGHT))
-        x += TILE_WIDTH
-        if x >= map.width:
-            x = 0
-            y += TILE_HEIGHT
-        if y >= map.height:
-            break
-    print(f"ended at offset={offset}")
+    for map_data in layer_map_datas:
+        x = 0
+        y = 0
+        for offset in range(0, len(map_data), 2):
+            (code,) = struct.unpack_from("<H", map_data, offset)
+            tile_index = code & 0xfff
+            tile_x = tile_index * TILE_WIDTH % tile_set_rgba.width
+            tile_y = 0
+            tile_y = tile_index * TILE_WIDTH // tile_set_rgba.width * TILE_HEIGHT
+            #tile_y = tile_index * TILE_HEIGHT * (tile_index * TILE_WIDTH // tile_set_rgba.width)
+            #x = (offset // 2) * TILE_WIDTH % map.width
+            #y = (offset // 2) * TILE_WIDTH // tile_set_rgba.width * TILE_HEIGHT
+            if tile_index > 0:
+                pass
+                #print(f"${offset:04x}: placing {tile_index:04x} at <{x},{y}> (from <{tile_x},{tile_y}>)")
+            map.alpha_composite(tile_set_rgba, (x, y), (tile_x, tile_y, tile_x + TILE_WIDTH, tile_y + TILE_HEIGHT))
+            x += TILE_WIDTH
+            if x >= map.width:
+                x = 0
+                y += TILE_HEIGHT
+            if y >= map.height:
+                break
     return map
 
 if __name__ == "__main__":
