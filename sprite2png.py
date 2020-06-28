@@ -71,35 +71,53 @@ def main():
             # _objoffset variables hold pointers relative to object_list_rom_offset.
             (object_list_objoffset,) = unpack_at_offset(object_list_rom_offset, "<I")
             rom_file.seek(object_list_rom_offset + object_list_objoffset)
-            (tile_index, x, y, flags) = unpack("<BbbH")
-            print(tile_index, x, y, flags)
-            object_size = (flags >> 0) & 3
-            h_flip = (flags & (1<<6)) != 0
-            v_flip = (flags & (1<<7)) != 0
-            object_shape = (flags >> 8) & 3
-            object_palette_index = (flags >> 12)
-            print(object_size, h_flip, v_flip, object_shape, object_palette_index)
+            class ObjectListEntry(typing.NamedTuple):
+                tile_index: int
+                x: int
+                y: int
+                shape_flag: int
+                palette_index: int
+                size_flag: int
+                h_flip: bool
+                v_flip: bool
 
-            size_and_shape_to_width_and_height = {
-                (0, 0): (8, 8),
-                (0, 1): (16, 8),
-                (0, 2): (8, 16),
-                (1, 0): (16, 16),
-                (1, 1): (32, 8),
-                (1, 2): (8, 32),
-                (2, 0): (32, 32),
-                (2, 1): (32, 16),
-                (2, 2): (16, 32),
-                (3, 0): (64, 64),
-                (3, 1): (64, 32),
-                (3, 2): (32, 64),
-            }
+                @property
+                def size(self) -> typing.Tuple[int, int]:
+                    size_and_shape_to_width_and_height = {
+                        (0, 0): (8, 8),
+                        (0, 1): (16, 8),
+                        (0, 2): (8, 16),
+                        (1, 0): (16, 16),
+                        (1, 1): (32, 8),
+                        (1, 2): (8, 32),
+                        (2, 0): (32, 32),
+                        (2, 1): (32, 16),
+                        (2, 2): (16, 32),
+                        (3, 0): (64, 64),
+                        (3, 1): (64, 32),
+                        (3, 2): (32, 64),
+                    }
+                    return size_and_shape_to_width_and_height[(self.size_flag, self.shape_flag)]
+
+            (tile_index, x, y, flags) = unpack("<BbbH")
+            object_list_entry = ObjectListEntry(
+                tile_index=tile_index,
+                x=x,
+                y=y,
+                size_flag = (flags >> 0) & 3,
+                h_flip = (flags & (1<<6)) != 0,
+                v_flip = (flags & (1<<7)) != 0,
+                shape_flag = (flags >> 8) & 3,
+                palette_index = (flags >> 12),
+            )
+            print(object_list_entry)
 
             sprite = PIL.Image.new("RGBA", (256, 256))
-            (object_width, object_height) = size_and_shape_to_width_and_height[(object_size, object_shape)]
+            (object_width, object_height) = object_list_entry.size
+            tile_index = object_list_entry.tile_index
             for yi in range(0, object_height, TILE_HEIGHT):
                 for xi in range(0, object_width, TILE_WIDTH):
-                    sprite.alpha_composite(tile_set, (x + xi + 128, y + yi + 128), (0, tile_index * TILE_HEIGHT, TILE_WIDTH, tile_index * TILE_HEIGHT + TILE_HEIGHT))
+                    sprite.alpha_composite(tile_set, (object_list_entry.x + xi + 128, object_list_entry.y + yi + 128), (0, tile_index * TILE_HEIGHT, TILE_WIDTH, tile_index * TILE_HEIGHT + TILE_HEIGHT))
                     tile_index += 1
             sprite_png_path = pathlib.Path("sprite.png")
             sprite.save(sprite_png_path)
