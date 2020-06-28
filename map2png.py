@@ -1,4 +1,5 @@
 import PIL.Image
+import os
 import pathlib
 import struct
 import subprocess
@@ -12,7 +13,8 @@ def main():
         with open("bn6f.gba", "rb") as rom_file:
             rom_file.seek(0x4ff4ac)
             map_header = rom_file.read(12)
-            (_unknown_0, _unknown_4, map_compressed_size) = struct.unpack("<III", map_header)
+            (_unknown_0, map_data_start_offset, map_compressed_size) = struct.unpack("<III", map_header)
+            rom_file.seek(map_data_start_offset - 12, os.SEEK_CUR)
             map_compressed_data = rom_file.read(map_compressed_size)
             map_data = decompress(map_compressed_data)
 
@@ -20,8 +22,9 @@ def main():
             palette = rom_file.read(256 * 2)
 
             rom_file.seek(0x4fafcc)
-            tile_set_header = rom_file.read(24)
-            tile_set_compressed_size = 0x84ff4ac-0x4fafcc # @@@
+            tile_set_header = rom_file.read(20)
+            (_unknown_0, tile_set_data_start_offset, _unknown_8, _unknown_c, tile_set_compressed_size) = struct.unpack("<IIIII", tile_set_header)
+            rom_file.seek(tile_set_data_start_offset - 20, os.SEEK_CUR)
             tile_set_compressed_data = rom_file.read(tile_set_compressed_size)
             tile_set_data = decompress(tile_set_compressed_data)
 
