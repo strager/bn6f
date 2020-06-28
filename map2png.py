@@ -7,23 +7,30 @@ import tempfile
 
 gbagfx_exe = pathlib.Path(__file__).parent / "tools" / "gbagfx" / "gbagfx"
 
+def address_to_rom_offset(address: int) -> int:
+    return address - 0x08000000
+
 def main():
     with tempfile.TemporaryDirectory() as temporary_directory:
         temp_dir = pathlib.Path(temporary_directory)
         with open("bn6f.gba", "rb") as rom_file:
-            rom_file.seek(0x4ff4ac)
+            rom_file.seek(address_to_rom_offset(0x8032a20))
+            area_header = rom_file.read(6 * 4)
+            (tile_set_address, palette_address, map_address, _unknown_c, _unknown_10, _unknown_14) = struct.unpack("<IIIIII", area_header)
+
+            rom_file.seek(address_to_rom_offset(map_address))
             map_header = rom_file.read(12)
             (_unknown_0, map_data_start_offset, map_compressed_size) = struct.unpack("<III", map_header)
             rom_file.seek(map_data_start_offset - 12, os.SEEK_CUR)
             map_compressed_data = rom_file.read(map_compressed_size)
             map_data = decompress(map_compressed_data)
 
-            rom_file.seek(0x4ff308)
+            rom_file.seek(address_to_rom_offset(palette_address))
             palette_header = rom_file.read(4)
             (palette_size,) = struct.unpack("<I", palette_header)
             palette = rom_file.read(palette_size)
 
-            rom_file.seek(0x4fafcc)
+            rom_file.seek(address_to_rom_offset(tile_set_address))
             tile_set_header = rom_file.read(20)
             (_unknown_0, tile_set_data_start_offset, _unknown_8, _unknown_c, tile_set_compressed_size) = struct.unpack("<IIIII", tile_set_header)
             rom_file.seek(tile_set_data_start_offset - 20, os.SEEK_CUR)
