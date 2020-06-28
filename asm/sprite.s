@@ -389,19 +389,23 @@ uncompSprite_8002906:
 	ldr r1, [r5,#0x4c] // (dword_200DCEC - 0x200dca0)
 	ldr r4, off_8002BC0 // =SpritePointersList
 	ldr r6, dword_8002BC4 // =0x2040000
+        // r7 := 0x0804e6b2
 	mov r7, r0
 loc_8002918:
-	ldrb r0, [r7]
+	ldrb r0, [r7,#0] // reading first byte of entry in byte_804E6AC
 	cmp r0, #0xff
 	beq loc_8002972
-	ldrb r3, [r7,#1]
+
+	ldrb r3, [r7,#1] // reading second byte of entry in byte_804E6AC
 	lsl r3, r3, #2
 	ldr r2, [r4,r0]
 	ldr r2, [r2,r3]
 	lsl r2, r2, #1
 	lsr r2, r2, #1
 	mov r8, r2
+        // read first word of e.g. comp_84C3C90 (compressed!)
 	ldr r2, [r2]
+
 	lsl r0, r0, #8
 	lsr r3, r3, #2
 	orr r0, r3
@@ -425,6 +429,7 @@ loc_8002918:
 	str r1, [r5,r7]
 	// dest
 	sub r1, #4
+        // r1 is 0x02038578, for example
 	add r3, #1
 	strb r3, [r5]
 	push {r1,r2,r4-r6}

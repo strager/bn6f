@@ -1581,14 +1581,22 @@ loc_300675A:
 	ldrb r0, [r5,#oObjectSprite_Unk_00]
 	lsl r0, r0, #2
 	ldr r1, [r5,#oObjectSprite_Unk_18]
-	ldr r2, [r1,r0]
+        // r1 is 0x02038580, for example, which is
+        // decompressed comp_84C3C90 + 8
+
+        // de-comp_84C3C90+8: de-comp_84C3C90-relative offset to something
+        // something+8: UNKNOWN_FIELD_8, a de-comp_84C3C90-relative offset to UNKNOWN_V3
+        // UNKNOWN_v3:
+
+        // r0 is 0, for example
+	ldr r2, [r1,r0] // read r2-based offset of stuff
 	add r3, r2, r1
 	str r3, [r5,#oObjectSprite_Unk_1c]
-	ldr r2, [r3,#8]
+	ldr r2, [r3,#8] // read UNKNOWN_FIELD_8
 	add r1, r1, r2
-	ldr r2, [r1]
+	ldr r2, [r1] // read UNKNOWN_V3
 	add r1, r1, r2
-	str r1, [r5,#oObjectSprite_Unk_20]
+	str r1, [r5,#oObjectSprite_Unk_20] // store pointer to de-comp_84C3C90+0x14, for example
 	ldrb r2, [r3,#0x10]
 	strb r2, [r5,#oObjectSprite_Unk_01]
 	ldrb r2, [r3,#0x12]

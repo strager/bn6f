@@ -33,13 +33,17 @@ def main():
                 data = rom_file.read(size)
                 return struct.unpack(format, data)
 
-            for sprite_pointer_address in range(0x08031cec, 0x80329a8, 4):
+            for sprite_pointer_address in [0x8032458]:
+            #for sprite_pointer_address in range(0x08031cec, 0x80329a8, 4):
                 (sprite_address,) = unpack_at_offset(address_to_rom_offset(sprite_pointer_address), "<I")
                 if sprite_address == 0x00000000:
                     print(f"!!! sprite_address={sprite_address:#08x}")
                     continue
 
                 (tiles_in_biggest_tileset, _constant_0, _constant_1, animation_count) = unpack_at_offset(address_to_rom_offset(sprite_address & 0x7fffffff), "<BBBB")
+                if animation_count == 0:
+                    (tiles_in_biggest_tileset, _constant_0, _constant_1, animation_count) = unpack_at_offset(address_to_rom_offset((sprite_address & 0x7fffffff) + 4), "<BBBB")
+                print(f"!!! animation_count={animation_count}")
 
                 animation_table_rom_offset = rom_file.tell()
                 # _animoffset variables hold pointers relative to animation_table_rom_offset.
@@ -112,7 +116,7 @@ def main():
                                 tile_index += 1
                     sprite_png_path = pathlib.Path(f"sprite-{sprite_address:08x}-{animation_index:03}.png")
                     sprite.save(sprite_png_path)
-                    #print(f"wrote {sprite_png_path}")
+                    print(f"wrote {sprite_png_path}")
 
 class ObjectListEntry(typing.NamedTuple):
     tile_index: int

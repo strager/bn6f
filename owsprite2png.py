@@ -33,12 +33,12 @@ def main():
             compressed_data = rom_file.read(compressed_size)
             data = decompress(compressed_data)
 
-            (_compressed_size, _unknown_4, _unknown_8, _unknown_c, palette_offset, _unknown_14, _unknown_18, tile_set_size) = struct.unpack_from("<IIIIIIII", data, 0)
+            (_compressed_size, _unknown_4, _unknown_8, _unknown_c, palette_offset, _unknown_14, _unknown_18, _unknown_1c, tile_set_size) = struct.unpack_from("<IIIIIIIII", data, 0)
+            tile_set_offset = 0x24
+
             PALETTE_SIZE = 16*2
             palette_data = data[palette_offset+0xc:palette_offset+0xc+PALETTE_SIZE]
 
-            tile_set_offset = 0x24 # @@@
-            tile_set_size = 8*8*4*6//2 # @@@
             tile_set_data = data[tile_set_offset:tile_set_offset+tile_set_size]
 
             tile_set_png_path = "tile-set.png"
