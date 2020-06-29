@@ -1,4 +1,5 @@
 
+	.equiv SPRITE_IS_COMPRESSED, 1<<31
 SpritePointersList:: .word battleSpritePtrs
 	.word virusBattleSpritePtrs
 	.word naviBattleSpritePtrs
@@ -24,37 +25,37 @@ battleSpritePtrs:: .word battleSpriteMegaMan
 	.word battleSprite_823B768
 	.word spriteWhiteDot
 virusBattleSpritePtrs:: .word spriteWhiteDot
-	.word compVirusBattleSpriteMetteur + 1<<31
-	.word compVirusBattleSprite_8242E94 + 1<<31
+	.word compVirusBattleSpriteMetteur + SPRITE_IS_COMPRESSED
+	.word compVirusBattleSprite_8242E94 + SPRITE_IS_COMPRESSED
 	.word virusBattleSprite_8244164
-	.word compVirusBattleSprite_82455B0 + 1<<31
+	.word compVirusBattleSprite_82455B0 + SPRITE_IS_COMPRESSED
 	.word virusBattleSprite_8246A24
-	.word compVirusBattleSprite_82489C8 + 1<<31
-	.word compVirusBattleSprite_82492FC + 1<<31
-	.word compVirusBattleSprite_8249C7C + 1<<31
+	.word compVirusBattleSprite_82489C8 + SPRITE_IS_COMPRESSED
+	.word compVirusBattleSprite_82492FC + SPRITE_IS_COMPRESSED
+	.word compVirusBattleSprite_8249C7C + SPRITE_IS_COMPRESSED
 	.word virusBattleSprite_824AC94
 	.word virusBattleSprite_824B254
-	.word compVirusBattleSprite_824D23C + 1<<31
-	.word compVirusBattleSprite_824DC7C + 1<<31
+	.word compVirusBattleSprite_824D23C + SPRITE_IS_COMPRESSED
+	.word compVirusBattleSprite_824DC7C + SPRITE_IS_COMPRESSED
 	.word virusBattleSprite_824EAF4
-	.word compVirusBattleSprite_8252558 + 1<<31
+	.word compVirusBattleSprite_8252558 + SPRITE_IS_COMPRESSED
 	.word sprite_82533F4
 	.word sprite_8253F88
-	.word comp_8257994 + 1<<31
-	.word comp_825859C + 1<<31
-	.word comp_8258FF8 + 1<<31
-	.word comp_825A0D8 + 1<<31
-	.word comp_825AD90 + 1<<31
-	.word comp_825B860 + 1<<31
-	.word comp_825BFC4 + 1<<31
+	.word comp_8257994 + SPRITE_IS_COMPRESSED
+	.word comp_825859C + SPRITE_IS_COMPRESSED
+	.word comp_8258FF8 + SPRITE_IS_COMPRESSED
+	.word comp_825A0D8 + SPRITE_IS_COMPRESSED
+	.word comp_825AD90 + SPRITE_IS_COMPRESSED
+	.word comp_825B860 + SPRITE_IS_COMPRESSED
+	.word comp_825BFC4 + SPRITE_IS_COMPRESSED
 	.word sprite_825C9AC
-	.word comp_825DFB4 + 1<<31
+	.word comp_825DFB4 + SPRITE_IS_COMPRESSED
 	.word sprite_825F2C8
 	.word sprite_8260F88
-	.word comp_8262CEC + 1<<31
-	.word comp_8263484 + 1<<31
+	.word comp_8262CEC + SPRITE_IS_COMPRESSED
+	.word comp_8263484 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word comp_82647E4 + 1<<31
+	.word comp_82647E4 + SPRITE_IS_COMPRESSED
 naviBattleSpritePtrs:: .word spriteWhiteDot
 	.word battleSpriteFlameMan
 	.word battleSpriteElecMan
@@ -67,23 +68,23 @@ naviBattleSpritePtrs:: .word spriteWhiteDot
 	.word sprite_82B0690
 	.word sprite_82BA7BC
 	.word battleSpriteProtoMan
-	.word comp_82CED74 + 1<<31
-	.word comp_82D2AC8 + 1<<31
-	.word comp_82D6FE4 + 1<<31
-	.word compSprite_82DABC8 + 1<<31
-	.word comp_82DD9A8 + 1<<31
+	.word comp_82CED74 + SPRITE_IS_COMPRESSED
+	.word comp_82D2AC8 + SPRITE_IS_COMPRESSED
+	.word comp_82D6FE4 + SPRITE_IS_COMPRESSED
+	.word compSprite_82DABC8 + SPRITE_IS_COMPRESSED
+	.word comp_82DD9A8 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word compBattleSprite_Colonel + 1<<31
-	.word comp_82E4050 + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_82E8470 + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
+	.word compBattleSprite_Colonel + SPRITE_IS_COMPRESSED
+	.word comp_82E4050 + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_82E8470 + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
 off_8031E00:: .word sprite_82EFE48
 	.word sprite_82F39C0
 	.word sprite_82F569C
 	.word sprite_82F6ECC
 	.word sprite_82F9CCC
-	.word comp_82FCA14 + 1<<31
+	.word comp_82FCA14 + SPRITE_IS_COMPRESSED
 	.word sprite_82FE378
 	.word sprite_82FE704
 	.word sprite_82FF95C
@@ -93,7 +94,7 @@ off_8031E00:: .word sprite_82EFE48
 	.word sprite_830451C
 	.word sprite_8304700
 	.word sprite_8308700
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
 	.word sprite_830902C
 	.word sprite_830A308
 	.word sprite_830D494
@@ -150,15 +151,15 @@ off_8031E00:: .word sprite_82EFE48
 	.word sprite_8332484
 	.word spriteWhiteDot
 	.word sprite_8333350
-	.word comp_8333CC8 + 1<<31
+	.word comp_8333CC8 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
 	.word spriteWhiteDot
-	.word comp_8334B0C + 1<<31
-	.word comp_83353F4 + 1<<31
+	.word comp_8334B0C + SPRITE_IS_COMPRESSED
+	.word comp_83353F4 + SPRITE_IS_COMPRESSED
 	.word sprite_8336320
 	.word spriteWhiteDot
 	.word sprite_8336D54
-	.word comp_8338170 + 1<<31
+	.word comp_8338170 + SPRITE_IS_COMPRESSED
 	.word sprite_8338F18
 	.word sprite_833BE68
 	.word sprite_833F3A0
@@ -178,11 +179,11 @@ off_8031E00:: .word sprite_82EFE48
 	.word sprite_834BBF0
 	.word sprite_834BEB8
 	.word sprite_834C6F0
-	.word comp_834FC40 + 1<<31
+	.word comp_834FC40 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
 	.word sprite_8350628
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
 off_8031FA4:: .word sprite_8350888
 	.word sprite_8351FA8
 	.word sprite_8352360
@@ -253,8 +254,8 @@ off_8031FA4:: .word sprite_8350888
 	.word sprite_8387E4C
 	.word sprite_838849C
 	.word sprite_838A9A8
-	.word comp_838B160 + 1<<31
-	.word comp_838B438 + 1<<31
+	.word comp_838B160 + SPRITE_IS_COMPRESSED
+	.word comp_838B438 + SPRITE_IS_COMPRESSED
 	.word sprite_838B930
 	.word spriteWhiteDot
 	.word sprite_838C3C8
@@ -326,7 +327,7 @@ npcSpritePtrs:: .word npcSpriteLan
 	.word sprite_83F37C4
 	.word sprite_83F6824
 	.word sprite_83FA130
-	.word comp_83FDF7C + 1<<31
+	.word comp_83FDF7C + SPRITE_IS_COMPRESSED
 	.word sprite_83FEC68
 	.word npcSpriteDad
 	.word sprite_8402FA0
@@ -334,19 +335,19 @@ npcSpritePtrs:: .word npcSpriteLan
 	.word sprite_84069EC
 	.word sprite_8408360
 	.word sprite_8408DB4
-	.word comp_840A4BC + 1<<31
-	.word compNpcSpriteMrFamous + 1<<31
+	.word comp_840A4BC + SPRITE_IS_COMPRESSED
+	.word compNpcSpriteMrFamous + SPRITE_IS_COMPRESSED
 	.word sprite_840B3A4
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_840F4F4 + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_84105EC + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_8410A18 + 1<<31
-	.word comp_84114E8 + 1<<31
-	.word comp_84119D0 + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_840F4F4 + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_84105EC + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_8410A18 + SPRITE_IS_COMPRESSED
+	.word comp_84114E8 + SPRITE_IS_COMPRESSED
+	.word comp_84119D0 + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
 	.word spriteWhiteDot
 	.word sprite_8411E90
@@ -359,13 +360,13 @@ npcSpritePtrs:: .word npcSpriteLan
 	.word spriteWhiteDot
 	.word sprite_842A630
 	.word sprite_842DAC0
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
 	.word npcSpriteMegaMan
-	.word compNpcSpriteRoll + 1<<31
-	.word compNpcSpriteGutsMan + 1<<31
-	.word compNpcSpriteGlyde + 1<<31
+	.word compNpcSpriteRoll + SPRITE_IS_COMPRESSED
+	.word compNpcSpriteGutsMan + SPRITE_IS_COMPRESSED
+	.word compNpcSpriteGlyde + SPRITE_IS_COMPRESSED
 	.word npcSpriteProtoMan
 	.word npcSpriteProgman
 	.word npcSpriteProgman
@@ -392,13 +393,13 @@ npcSpritePtrs:: .word npcSpriteLan
 	.word sprite_848334C
 	.word npcSpriteColonel
 	.word sprite_848FCEC
-	.word comp_8495434 + 1<<31
+	.word comp_8495434 + SPRITE_IS_COMPRESSED
 	.word sprite_8495B88
 	.word npcSpriteGreenNavi
 	.word spriteWhiteDot
 	.word sprite_8497CF8
-	.word comp_8499CF0 + 1<<31
-	.word comp_849AAD0 + 1<<31
+	.word comp_8499CF0 + SPRITE_IS_COMPRESSED
+	.word comp_849AAD0 + SPRITE_IS_COMPRESSED
 	.word npcSpriteProgman
 	.word npcSpriteProgman
 	.word npcSpriteProgman
@@ -409,160 +410,160 @@ objSpritePtrs:: .word sprite_849B424
 	.word objSpriteSkullBarrier
 	.word sprite_849FBC0
 	.word spriteWhiteDot
-	.word comp_84A03B8 + 1<<31
-	.word comp_84A0920 + 1<<31
-	.word comp_84A0DCC + 1<<31
-	.word comp_84A1458 + 1<<31
-	.word comp_84A1B14 + 1<<31
-	.word comp_84A1E30 + 1<<31
-	.word comp_84A225C + 1<<31
+	.word comp_84A03B8 + SPRITE_IS_COMPRESSED
+	.word comp_84A0920 + SPRITE_IS_COMPRESSED
+	.word comp_84A0DCC + SPRITE_IS_COMPRESSED
+	.word comp_84A1458 + SPRITE_IS_COMPRESSED
+	.word comp_84A1B14 + SPRITE_IS_COMPRESSED
+	.word comp_84A1E30 + SPRITE_IS_COMPRESSED
+	.word comp_84A225C + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word comp_84A24CC + 1<<31
+	.word comp_84A24CC + SPRITE_IS_COMPRESSED
 	.word sprite_84A3048
-	.word comp_84A3708 + 1<<31
-	.word comp_84A3B44 + 1<<31
-	.word comp_84A3E08 + 1<<31
-	.word comp_84A40E0 + 1<<31
-	.word comp_84A47F0 + 1<<31
-	.word comp_84A4F0C + 1<<31 // cones and bar blocking path in central town
-	.word comp_84A502C + 1<<31 // birb statue and flowers in central town
+	.word comp_84A3708 + SPRITE_IS_COMPRESSED
+	.word comp_84A3B44 + SPRITE_IS_COMPRESSED
+	.word comp_84A3E08 + SPRITE_IS_COMPRESSED
+	.word comp_84A40E0 + SPRITE_IS_COMPRESSED
+	.word comp_84A47F0 + SPRITE_IS_COMPRESSED
+	.word comp_84A4F0C + SPRITE_IS_COMPRESSED // cones and bar blocking path in central town
+	.word comp_84A502C + SPRITE_IS_COMPRESSED // birb statue and flowers in central town
 	.word sprite_84A53C4
 	.word sprite_84A599C
-	.word comp_84A642C + 1<<31
-	.word comp_84A6D14 + 1<<31
-	.word comp_84A71A0 + 1<<31
-	.word comp_84A74A4 + 1<<31
-	.word comp_84A77A4 + 1<<31
-	.word comp_84A7A14 + 1<<31
-	.word comp_84A7FA4 + 1<<31
-	.word comp_84A8524 + 1<<31
+	.word comp_84A642C + SPRITE_IS_COMPRESSED
+	.word comp_84A6D14 + SPRITE_IS_COMPRESSED
+	.word comp_84A71A0 + SPRITE_IS_COMPRESSED
+	.word comp_84A74A4 + SPRITE_IS_COMPRESSED
+	.word comp_84A77A4 + SPRITE_IS_COMPRESSED
+	.word comp_84A7A14 + SPRITE_IS_COMPRESSED
+	.word comp_84A7FA4 + SPRITE_IS_COMPRESSED
+	.word comp_84A8524 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
 	.word sprite_84A8AC0
-	.word comp_84A8F68 + 1<<31
-	.word comp_84A914C + 1<<31
-	.word comp_84A96B8 + 1<<31
+	.word comp_84A8F68 + SPRITE_IS_COMPRESSED
+	.word comp_84A914C + SPRITE_IS_COMPRESSED
+	.word comp_84A96B8 + SPRITE_IS_COMPRESSED
 	.word sprite_84A97A8
-	.word comp_84AA028 + 1<<31
-	.word comp_84AA640 + 1<<31
-	.word comp_84AAC80 + 1<<31
-	.word comp_84AAE70 + 1<<31
-	.word comp_84AAF18 + 1<<31
+	.word comp_84AA028 + SPRITE_IS_COMPRESSED
+	.word comp_84AA640 + SPRITE_IS_COMPRESSED
+	.word comp_84AAC80 + SPRITE_IS_COMPRESSED
+	.word comp_84AAE70 + SPRITE_IS_COMPRESSED
+	.word comp_84AAF18 + SPRITE_IS_COMPRESSED
 	.word sprite_84AB2D0
 	.word sprite_84AB680
 	.word sprite_84ADD6C
-	.word comp_84AE340 + 1<<31
+	.word comp_84AE340 + SPRITE_IS_COMPRESSED
 	.word sprite_84AF710
 	.word sprite_84B1BA0
-	.word comp_84B42EC + 1<<31
+	.word comp_84B42EC + SPRITE_IS_COMPRESSED
 	.word sprite_84B4838
 	.word sprite_84B5238
-	.word comp_84B5734 + 1<<31
+	.word comp_84B5734 + SPRITE_IS_COMPRESSED
 	.word sprite_84B5C18
 	.word sprite_84B62AC
-	.word comp_84B6744 + 1<<31
+	.word comp_84B6744 + SPRITE_IS_COMPRESSED
 	.word sprite_84B7414
 	.word sprite_84B8BB4
 	.word sprite_84BA414
 	.word sprite_84BA7A8
-	.word comp_84BADF8 + 1<<31
-	.word comp_84BB07C + 1<<31
+	.word comp_84BADF8 + SPRITE_IS_COMPRESSED
+	.word comp_84BB07C + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word comp_84BB704 + 1<<31
-	.word comp_84BBA74 + 1<<31
+	.word comp_84BB704 + SPRITE_IS_COMPRESSED
+	.word comp_84BBA74 + SPRITE_IS_COMPRESSED
 	.word sprite_84BC0C8
-	.word comp_84BC4D0 + 1<<31
+	.word comp_84BC4D0 + SPRITE_IS_COMPRESSED
 	.word sprite_84BC854
-	.word comp_84BD3FC + 1<<31
-	.word comp_84BD83C + 1<<31
+	.word comp_84BD3FC + SPRITE_IS_COMPRESSED
+	.word comp_84BD83C + SPRITE_IS_COMPRESSED
 	.word sprite_84BDDD4
-	.word comp_84BE924 + 1<<31
-	.word comp_84BECDC + 1<<31
-	.word comp_84BEF4C + 1<<31
-	.word comp_84BF174 + 1<<31
+	.word comp_84BE924 + SPRITE_IS_COMPRESSED
+	.word comp_84BECDC + SPRITE_IS_COMPRESSED
+	.word comp_84BEF4C + SPRITE_IS_COMPRESSED
+	.word comp_84BF174 + SPRITE_IS_COMPRESSED
 	.word sprite_84BF6F8
-	.word comp_84C0150 + 1<<31
+	.word comp_84C0150 + SPRITE_IS_COMPRESSED
 	.word sprite_84C0298
 	.word sprite_84C2D34
 	.word spriteWhiteDot
-	.word comp_84C3C90 + 1<<31 // overworld tree (in central town)
-	.word comp_84C3F54 + 1<<31
-	.word comp_84C43AC + 1<<31
+	.word comp_84C3C90 + SPRITE_IS_COMPRESSED // overworld tree (in central town)
+	.word comp_84C3F54 + SPRITE_IS_COMPRESSED
+	.word comp_84C43AC + SPRITE_IS_COMPRESSED
 	.word sprite_84C5194
 	.word sprite_84C832C
-	.word comp_84C8DEC + 1<<31
+	.word comp_84C8DEC + SPRITE_IS_COMPRESSED
 	.word sprite_84C90B4
-	.word comp_84CA1BC + 1<<31
-	.word comp_84CA74C + 1<<31
-	.word comp_84CA9E8 + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_84CAD70 + 1<<31
-	.word comp_84CB0F4 + 1<<31
-	.word comp_84CB3A8 + 1<<31
-	.word comp_84CB638 + 1<<31
-	.word comp_84CB930 + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_84CBC1C + 1<<31
-	.word comp_84CBDE8 + 1<<31
-	.word comp_84CC308 + 1<<31
-	.word comp_84CC8AC + 1<<31
-	.word comp_84CD83C + 1<<31
-	.word comp_84CDCE8 + 1<<31
-	.word comp_84CDE24 + 1<<31
+	.word comp_84CA1BC + SPRITE_IS_COMPRESSED
+	.word comp_84CA74C + SPRITE_IS_COMPRESSED
+	.word comp_84CA9E8 + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_84CAD70 + SPRITE_IS_COMPRESSED
+	.word comp_84CB0F4 + SPRITE_IS_COMPRESSED
+	.word comp_84CB3A8 + SPRITE_IS_COMPRESSED
+	.word comp_84CB638 + SPRITE_IS_COMPRESSED
+	.word comp_84CB930 + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_84CBC1C + SPRITE_IS_COMPRESSED
+	.word comp_84CBDE8 + SPRITE_IS_COMPRESSED
+	.word comp_84CC308 + SPRITE_IS_COMPRESSED
+	.word comp_84CC8AC + SPRITE_IS_COMPRESSED
+	.word comp_84CD83C + SPRITE_IS_COMPRESSED
+	.word comp_84CDCE8 + SPRITE_IS_COMPRESSED
+	.word comp_84CDE24 + SPRITE_IS_COMPRESSED
 	.word sprite_84CDF74
-	.word comp_84CF9D8 + 1<<31
-	.word comp_84CFC7C + 1<<31
-	.word comp_84D014C + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_84D230C + 1<<31
-	.word comp_84D26BC + 1<<31
-	.word comp_84D2820 + 1<<31
-	.word comp_84D2A54 + 1<<31
-	.word comp_84D3998 + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
+	.word comp_84CF9D8 + SPRITE_IS_COMPRESSED
+	.word comp_84CFC7C + SPRITE_IS_COMPRESSED
+	.word comp_84D014C + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_84D230C + SPRITE_IS_COMPRESSED
+	.word comp_84D26BC + SPRITE_IS_COMPRESSED
+	.word comp_84D2820 + SPRITE_IS_COMPRESSED
+	.word comp_84D2A54 + SPRITE_IS_COMPRESSED
+	.word comp_84D3998 + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
 	.word sprite_84D3DBC
-	.word comp_84D4AC4 + 1<<31
-	.word comp_84D4CC8 + 1<<31
-	.word comp_84D4FF0 + 1<<31
-	.word comp_84D5764 + 1<<31
-	.word comp_84D5C94 + 1<<31
-	.word comp_84D5DF0 + 1<<31
-	.word comp_84D6370 + 1<<31
+	.word comp_84D4AC4 + SPRITE_IS_COMPRESSED
+	.word comp_84D4CC8 + SPRITE_IS_COMPRESSED
+	.word comp_84D4FF0 + SPRITE_IS_COMPRESSED
+	.word comp_84D5764 + SPRITE_IS_COMPRESSED
+	.word comp_84D5C94 + SPRITE_IS_COMPRESSED
+	.word comp_84D5DF0 + SPRITE_IS_COMPRESSED
+	.word comp_84D6370 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word comp_84D66B8 + 1<<31
-	.word comp_84D6908 + 1<<31
-	.word comp_84D6BF0 + 1<<31
-	.word comp_84D6E50 + 1<<31
-	.word comp_84D701C + 1<<31
-	.word comp_84D77D8 + 1<<31
-	.word comp_84D84E4 + 1<<31
-	.word comp_84D9344 + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
+	.word comp_84D66B8 + SPRITE_IS_COMPRESSED
+	.word comp_84D6908 + SPRITE_IS_COMPRESSED
+	.word comp_84D6BF0 + SPRITE_IS_COMPRESSED
+	.word comp_84D6E50 + SPRITE_IS_COMPRESSED
+	.word comp_84D701C + SPRITE_IS_COMPRESSED
+	.word comp_84D77D8 + SPRITE_IS_COMPRESSED
+	.word comp_84D84E4 + SPRITE_IS_COMPRESSED
+	.word comp_84D9344 + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word comp_84D9954 + 1<<31
-	.word comp_84DA604 + 1<<31
+	.word comp_84D9954 + SPRITE_IS_COMPRESSED
+	.word comp_84DA604 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word comp_84DAD14 + 1<<31
-	.word comp_84DB04C + 1<<31
-	.word comp_84DB1CC + 1<<31
-	.word comp_84DB8F8 + 1<<31
-	.word comp_84DBD30 + 1<<31
-	.word comp_84DC2B0 + 1<<31
-	.word comp_84DCBD8 + 1<<31
+	.word comp_84DAD14 + SPRITE_IS_COMPRESSED
+	.word comp_84DB04C + SPRITE_IS_COMPRESSED
+	.word comp_84DB1CC + SPRITE_IS_COMPRESSED
+	.word comp_84DB8F8 + SPRITE_IS_COMPRESSED
+	.word comp_84DBD30 + SPRITE_IS_COMPRESSED
+	.word comp_84DC2B0 + SPRITE_IS_COMPRESSED
+	.word comp_84DCBD8 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word comp_84DD20C + 1<<31
-	.word comp_84DD40C + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_84DDDB8 + 1<<31
-	.word comp_84DDF94 + 1<<31
-	.word comp_84DE328 + 1<<31
-	.word comp_84DE598 + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_84DE728 + 1<<31
-	.word comp_84DEFD8 + 1<<31
-	.word comp_84DF674 + 1<<31
+	.word comp_84DD20C + SPRITE_IS_COMPRESSED
+	.word comp_84DD40C + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_84DDDB8 + SPRITE_IS_COMPRESSED
+	.word comp_84DDF94 + SPRITE_IS_COMPRESSED
+	.word comp_84DE328 + SPRITE_IS_COMPRESSED
+	.word comp_84DE598 + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_84DE728 + SPRITE_IS_COMPRESSED
+	.word comp_84DEFD8 + SPRITE_IS_COMPRESSED
+	.word comp_84DF674 + SPRITE_IS_COMPRESSED
 	.word sprite_84DF96C
-	.word comp_84E00A0 + 1<<31
+	.word comp_84E00A0 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
 mugshotSpritePtrs:: .word mugshotLan
 	.word mugshotMayl
@@ -664,49 +665,49 @@ mugshotSpritePtrs:: .word mugshotLan
 guiSpritePtrs:: .word sprite_86CBB7C
 	.word sprite_86CC13C
 	.word sprite_86CD410
-	.word comp_86C6B30 + 1<<31
-	.word comp_86C6FD0 + 1<<31
-	.word comp_86C73D8 + 1<<31
-	.word comp_86C7764 + 1<<31
-	.word comp_86C7980 + 1<<31
-	.word comp_86CDEA8 + 1<<31
-	.word comp_86CE51C + 1<<31
-	.word comp_86CEAA8 + 1<<31
-	.word comp_86CEC3C + 1<<31
+	.word comp_86C6B30 + SPRITE_IS_COMPRESSED
+	.word comp_86C6FD0 + SPRITE_IS_COMPRESSED
+	.word comp_86C73D8 + SPRITE_IS_COMPRESSED
+	.word comp_86C7764 + SPRITE_IS_COMPRESSED
+	.word comp_86C7980 + SPRITE_IS_COMPRESSED
+	.word comp_86CDEA8 + SPRITE_IS_COMPRESSED
+	.word comp_86CE51C + SPRITE_IS_COMPRESSED
+	.word comp_86CEAA8 + SPRITE_IS_COMPRESSED
+	.word comp_86CEC3C + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_86CFD1C + 1<<31
-	.word comp_87F0664 + 1<<31
-	.word comp_87F0834 + 1<<31
-	.word comp_86D471C + 1<<31
-	.word comp_86D497C + 1<<31
-	.word comp_86D4FC4 + 1<<31
-	.word comp_86D5070 + 1<<31
-	.word comp_86D5224 + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_86D54F4 + 1<<31
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_86CFD1C + SPRITE_IS_COMPRESSED
+	.word comp_87F0664 + SPRITE_IS_COMPRESSED
+	.word comp_87F0834 + SPRITE_IS_COMPRESSED
+	.word comp_86D471C + SPRITE_IS_COMPRESSED
+	.word comp_86D497C + SPRITE_IS_COMPRESSED
+	.word comp_86D4FC4 + SPRITE_IS_COMPRESSED
+	.word comp_86D5070 + SPRITE_IS_COMPRESSED
+	.word comp_86D5224 + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_86D54F4 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
 	.word sprite_849B424
 	.word battleSpriteMegaMan
 	.word battleSpriteMegaMan
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
 	.word sprite_82F6ECC
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_86D91FC + 1<<31
-	.word comp_86D93E0 + 1<<31
-	.word comp_86DCCF0 + 1<<31
-	.word comp_86DD328 + 1<<31
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_86D91FC + SPRITE_IS_COMPRESSED
+	.word comp_86D93E0 + SPRITE_IS_COMPRESSED
+	.word comp_86DCCF0 + SPRITE_IS_COMPRESSED
+	.word comp_86DD328 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
-	.word comp_86D9C40 + 1<<31
-	.word comp_86D9D10 + 1<<31
-	.word comp_86DC518 + 1<<31
-	.word comp_86DC688 + 1<<31
+	.word comp_86D9C40 + SPRITE_IS_COMPRESSED
+	.word comp_86D9D10 + SPRITE_IS_COMPRESSED
+	.word comp_86DC518 + SPRITE_IS_COMPRESSED
+	.word comp_86DC688 + SPRITE_IS_COMPRESSED
 	.word sprite_83B5F44
-	.word comp_86D8C80 + 1<<31
+	.word comp_86D8C80 + SPRITE_IS_COMPRESSED
 	.word spriteWhiteDot
 	.word spriteWhiteDot
 	.word battleSpriteFlameMan
@@ -757,70 +758,70 @@ off_8032800:: .word sprite_87E069C
 	.word battleSprite_822CC50
 	.word battleSprite_8233728
 	.word battleSprite_823B768
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word comp_86DB208 + 1<<31
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word comp_86DB208 + SPRITE_IS_COMPRESSED
 	.word battleSpriteProtoMan
 	.word sprite_87E1D84
 	.word sprite_87E24F4
 	.word sprite_87E1894
 	.word sprite_87E1AD4
 	.word sprite_87E2860
-	.word comp_86DBB0C + 1<<31
-	.word comp_86DB9C4 + 1<<31
-	.word compVirusBattleSpriteMetteur + 1<<31
-	.word compVirusBattleSprite_8242E94 + 1<<31
+	.word comp_86DBB0C + SPRITE_IS_COMPRESSED
+	.word comp_86DB9C4 + SPRITE_IS_COMPRESSED
+	.word compVirusBattleSpriteMetteur + SPRITE_IS_COMPRESSED
+	.word compVirusBattleSprite_8242E94 + SPRITE_IS_COMPRESSED
 	.word virusBattleSprite_8244164
-	.word compVirusBattleSprite_82455B0 + 1<<31
+	.word compVirusBattleSprite_82455B0 + SPRITE_IS_COMPRESSED
 	.word virusBattleSprite_8246A24
-	.word compVirusBattleSprite_82489C8 + 1<<31
-	.word compVirusBattleSprite_82492FC + 1<<31
-	.word compVirusBattleSprite_8249C7C + 1<<31
+	.word compVirusBattleSprite_82489C8 + SPRITE_IS_COMPRESSED
+	.word compVirusBattleSprite_82492FC + SPRITE_IS_COMPRESSED
+	.word compVirusBattleSprite_8249C7C + SPRITE_IS_COMPRESSED
 	.word virusBattleSprite_824AC94
 	.word virusBattleSprite_824B254
-	.word compVirusBattleSprite_824D23C + 1<<31
-	.word compVirusBattleSprite_824DC7C + 1<<31
+	.word compVirusBattleSprite_824D23C + SPRITE_IS_COMPRESSED
+	.word compVirusBattleSprite_824DC7C + SPRITE_IS_COMPRESSED
 	.word virusBattleSprite_824EAF4
-	.word compVirusBattleSprite_8252558 + 1<<31
+	.word compVirusBattleSprite_8252558 + SPRITE_IS_COMPRESSED
 	.word sprite_82533F4
 	.word sprite_8253F88
-	.word comp_8257994 + 1<<31
-	.word comp_825859C + 1<<31
-	.word comp_8258FF8 + 1<<31
-	.word comp_825A0D8 + 1<<31
-	.word comp_825AD90 + 1<<31
-	.word comp_825B860 + 1<<31
-	.word comp_825BFC4 + 1<<31
+	.word comp_8257994 + SPRITE_IS_COMPRESSED
+	.word comp_825859C + SPRITE_IS_COMPRESSED
+	.word comp_8258FF8 + SPRITE_IS_COMPRESSED
+	.word comp_825A0D8 + SPRITE_IS_COMPRESSED
+	.word comp_825AD90 + SPRITE_IS_COMPRESSED
+	.word comp_825B860 + SPRITE_IS_COMPRESSED
+	.word comp_825BFC4 + SPRITE_IS_COMPRESSED
 	.word sprite_825C9AC
-	.word comp_825DFB4 + 1<<31
+	.word comp_825DFB4 + SPRITE_IS_COMPRESSED
 	.word sprite_825F2C8
 	.word sprite_8260F88
-	.word comp_8262CEC + 1<<31
-	.word comp_8263484 + 1<<31
+	.word comp_8262CEC + SPRITE_IS_COMPRESSED
+	.word comp_8263484 + SPRITE_IS_COMPRESSED
 	.word npcSpriteLan
 	.word npcSpriteMegaMan
-	.word comp_86C33B4 + 1<<31
+	.word comp_86C33B4 + SPRITE_IS_COMPRESSED
 	.word battleSpriteMegaMan
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
-	.word compSpriteWhiteDot_84E0C4C + 1<<31
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
+	.word compSpriteWhiteDot_84E0C4C + SPRITE_IS_COMPRESSED
 	.word sprite_839CCDC
-	.word comp_82FCA14 + 1<<31
+	.word comp_82FCA14 + SPRITE_IS_COMPRESSED
 	.word sprite_8345C50
 	.word sprite_8304700
 	.word sprite_830A308
-	.word comp_82E8470 + 1<<31
+	.word comp_82E8470 + SPRITE_IS_COMPRESSED
 	.word sprite_828F18C
 	.word sprite_8355D50
 	.word sprite_838849C
 	.word sprite_8318920
 	.word sprite_839B9C0
 	.word sprite_8351FA8
-	.word compVirusBattleSpriteMetteur + 1<<31
+	.word compVirusBattleSpriteMetteur + SPRITE_IS_COMPRESSED
 	.word sprite_8399578
 	.word sprite_83AE2B4
-	.word compVirusBattleSprite_824D23C + 1<<31
+	.word compVirusBattleSprite_824D23C + SPRITE_IS_COMPRESSED
 	.word sprite_8253F88
-	.word comp_825DFB4 + 1<<31
+	.word comp_825DFB4 + SPRITE_IS_COMPRESSED
 	.word sprite_837D8E0
 	.word sprite_838E194
 	.word sprite_83A9190
