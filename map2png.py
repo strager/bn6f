@@ -140,6 +140,7 @@ def main():
 
                 area_image.save(output_file_name)
                 print(f"wrote: {output_file_name}")
+                subprocess.check_call(["/usr/bin/xviewer", str(output_file_name)])
 
 def create_image_for_map(tile_set, layer_map_datas: typing.Sequence[bytes], map_width: int, map_height: int):
     tile_set_rgba = tile_set.convert("RGBA")

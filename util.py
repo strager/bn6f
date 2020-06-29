@@ -71,20 +71,26 @@ def get_overworld_sprite_image(rom: ROM, owsprite_index: int):
     # Does top bit set mean we have to use the overworld
     # sprite format instead of the animation sprite
     # format?
+    compressed = bool(owsprite_address & 0x80000000)
     owsprite_address &= ~0x80000000
     print(f"owsprite_address={owsprite_address:#x}")
     #owsprite_address = 0x84c3c90
     #owsprite_address = 0x84c3c90
-    return get_overworld_sprite_image_raw(rom=rom, owsprite_address=owsprite_address, sprite_subindex=sprite_subindex)
+    return get_overworld_sprite_image_raw(rom=rom, owsprite_address=owsprite_address, sprite_subindex=sprite_subindex, compressed=compressed)
 
-def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int, sprite_subindex: int):
+def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int, sprite_subindex: int, compressed: bool):
     with tempfile.TemporaryDirectory() as temporary_directory:
         temp_dir = pathlib.Path(temporary_directory)
-        (compressed_size,) = rom.unpack_at_offset(address_to_rom_offset(owsprite_address), "<I")
-        compressed_size >>= 8
-        rom.file.seek(address_to_rom_offset(owsprite_address))
-        compressed_data = rom.file.read(compressed_size)
-        data_with_header = decompress(compressed_data)
+        if compressed:
+            (compressed_size,) = rom.unpack_at_offset(address_to_rom_offset(owsprite_address), "<I")
+            compressed_size >>= 8
+            rom.file.seek(address_to_rom_offset(owsprite_address))
+            compressed_data = rom.file.read(compressed_size)
+            data_with_header = decompress(compressed_data)
+        else:
+            rom.file.seek(address_to_rom_offset(owsprite_address))
+            data_with_header = rom.file.read(0x1000) # @@@
+            data_with_header = b"____" + data_with_header
 
         (_unknown_4, _unknown_5, _unknown_6, sprite_count) = struct.unpack_from("<BBBB", data_with_header, 4)
         if sprite_count == 0:
