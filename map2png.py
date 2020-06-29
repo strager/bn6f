@@ -7,6 +7,8 @@ import tempfile
 import typing
 from util import TILE_WIDTH, TILE_HEIGHT, address_to_rom_offset, gbagfx_exe, decompress, chunk, get_overworld_sprite_image, ROM
 
+DEBUG_PINK = False
+
 def main():
     with tempfile.TemporaryDirectory() as temporary_directory:
         temp_dir = pathlib.Path(temporary_directory)
@@ -104,9 +106,10 @@ def main():
                         continue
                     print(top_left_x, top_left_y)
                     area_image.alpha_composite(sprite_image, (top_left_x, top_left_y), (0, 0, sprite_image.width, sprite_image.height))
-                    for xi in range(10):
-                        for yi in range(10):
-                            area_image.putpixel((int(x + xi), int(y + yi)), (0xff, 0x00, 0xff, 0xff))
+                    if DEBUG_PINK:
+                        for xi in range(10):
+                            for yi in range(10):
+                                area_image.putpixel((int(x + xi), int(y + yi)), (0xff, 0x00, 0xff, 0xff))
 
                 area_image.save(output_file_name)
                 print(f"wrote: {output_file_name}")
