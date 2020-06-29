@@ -853,9 +853,10 @@ off_80329C4:: .word off_8032BE8
 	.word off_8032EF4
 	.word off_8032F18
 	.word off_8032F48
-off_8032A20:: .word byte_84FAFCC
-	.word byte_84FF308
-	.word byte_84FF4AC
+off_8032A20::
+	.word byte_84FAFCC // tile data (dompressed, 8bpp)
+	.word byte_84FF308 // palette data (uncompressed, 16bpp)
+	.word byte_84FF4AC // map data (compressed, 16bpt)
 	.word dword_8500F1C
 	.word byte_8503098
 	.word byte_850323C

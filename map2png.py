@@ -41,9 +41,13 @@ def main():
                 palette = palettes[0]
 
                 rom_file.seek(address_to_rom_offset(tile_set_address))
-                tile_set_header = rom_file.read(20)
-                (_unknown_0, tile_set_data_start_offset, _unknown_8, _unknown_c, tile_set_compressed_size) = struct.unpack("<IIIII", tile_set_header)
-                rom_file.seek(tile_set_data_start_offset - 20, os.SEEK_CUR)
+                print(f"tile_set_address={tile_set_address:#x}")
+                tile_set_header = rom_file.read(0xc)
+                (tile_set_uncompressed_size, tile_set_data_offset, tile_set_vram_offset) = struct.unpack("<III", tile_set_header)
+                (tile_set_compressed_size,) = rom.unpack_at_offset(address_to_rom_offset(tile_set_address + tile_set_data_offset), "<I")
+                tile_set_compressed_size = (tile_set_compressed_size >> 8) & 0xffffff
+                print(f"{tile_set_compressed_size:#x}")
+                rom_file.seek(address_to_rom_offset(tile_set_address + tile_set_data_offset))
                 tile_set_compressed_data = rom_file.read(tile_set_compressed_size)
                 tile_set_data = decompress(tile_set_compressed_data)
 
@@ -64,6 +68,8 @@ def main():
                 temp_tile_set_png_path = temp_dir / "temp-tile-set.png"
                 temp_tile_set = PIL.Image.open(tile_set_png_path)
                 temp_tile_set.save(temp_tile_set_png_path, transparency=0)
+                import shutil
+                shutil.copy(temp_tile_set_png_path, "tile-set.png")
 
                 tile_set = PIL.Image.open(temp_tile_set_png_path)
                 area_image = create_image_for_map(tile_set=tile_set, layer_map_datas=[bottom_layer_maps_data, top_layer_maps_data], map_width=map_width, map_height=map_height)
@@ -122,10 +128,13 @@ def create_image_for_map(tile_set, layer_map_datas: typing.Sequence[bytes], map_
         y = 0
         for offset in range(0, len(map_data), 2):
             (code,) = struct.unpack_from("<H", map_data, offset)
-            tile_index = code & 0xfff
+            tile_index = code & 0x3ff
             tile_x = tile_index * TILE_WIDTH % tile_set_rgba.width
             tile_y = 0
             tile_y = tile_index * TILE_WIDTH // tile_set_rgba.width * TILE_HEIGHT
+            if tile_y > tile_set_rgba.height:
+                print(f"!!! {code:#x}")
+            # TODO(strager): h-flip, v-flip
             map.alpha_composite(tile_set_rgba, (x, y), (tile_x, tile_y, tile_x + TILE_WIDTH, tile_y + TILE_HEIGHT))
             x += TILE_WIDTH
             if x >= map.width:

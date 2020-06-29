@@ -19629,16 +19629,21 @@ initMapTilesState_803037c:
 	ldr r5, off_80305E0 // =eMapTilesState200be70
 	cmp r0, #INTERNET_MAP_GROUP_START
 	bge loc_8030392
+        // real world maps
 	ldr r3, off_80303D8 // =off_80329A8 
 	ldr r4, off_80303DC // =off_8032F6C 
 	b loc_8030398
 loc_8030392:
+        // internet maps
 	ldr r3, off_80303E0 // =off_80329C4 
 	ldr r4, off_80303E4 // =off_8032F88 
 	sub r0, #INTERNET_MAP_GROUP_START
+
 loc_8030398:
+        // look up map list for area
 	lsl r0, r0, #2
 	ldr r3, [r3,r0]
+        // look up map pointers (e.g. 8032a20) for map
 	mov r2, #0xc
 	mul r2, r1
 	add r3, r3, r2
@@ -19656,17 +19661,17 @@ loc_8030398:
 	ldr r2, [r4,#8]
 	str r2, [r5,#oMapTilesState200be70_UnkCallback_20] // (dword_200BE90 - 0x200be70)
 
-	ldr r0, [r3,#8]
+	ldr r0, [r3,#8] // load pointer to tilemap header
 	ldr r1, off_803057C // =eDecompBuffer2013A00
-	ldrb r2, [r0]
+	ldrb r2, [r0,#0] // tilemap width
 	strb r2, [r5,#oMapTilesState200be70_MapWidth]
-	ldrb r2, [r0,#1]
+	ldrb r2, [r0,#1] // tilemap height
 	strb r2, [r5,#oMapTilesState200be70_MapHeight] // (byte_200BE71 - 0x200be70)
 
-	ldr r2, [r3,#4]
+	ldr r2, [r3,#4] // load pointer to palette
 	str r2, [r5,#oMapTilesState200be70_PalettePtr] // (dword_200BE80 - 0x200be70)
 
-	ldr r2, [r3]
+	ldr r2, [r3,#0] // load pointer to tileset
 	str r2, [r5,#oMapTilesState200be70_TilesetPtr] // (dword_200BE84 - 0x200be70)
 
 	str r1, [r5,#oMapTilesState200be70_Unk_0c] // (dword_200BE7C - 0x200be70)
@@ -19675,6 +19680,7 @@ loc_8030398:
 	mov r8, r1
 	mov r9, r2
 	mov r12, r3
+        // return?: r0=pointer to tilemap header
 	pop {r4-r7,pc}
 	.balign 4, 0
 off_80303D8: .word off_80329A8
@@ -19788,20 +19794,23 @@ decompAndCopyMapTiles_8030472:
 	mov r0, #0
 	ldr r7, [r5,#oMapTilesState200be70_TilesetPtr] // (dword_200BE84 - 0x200be70)
 	mov r6, r7
+
+        // load one layer's tileset (two iterations)
 loc_8030492:
 	push {r0,r6}
-	ldr r0, [r7,#4]
+	ldr r0, [r7,#4] // tile_set_data_start_offset
 	// src
 	add r0, r0, r6
 	// dest
 	ldr r1, off_803057C // =eDecompBuffer2013A00
 	bl SWI_LZ77UnCompReadNormalWrite8bit // (void *src, void *dest) -> void
 	
+        // (_unknown_0, tile_set_data_start_offset, _unknown_8, _unknown_c, tile_set_compressed_size) = struct.unpack("<IIIII", tile_set_header)
 	ldr r0, off_803057C // =eDecompBuffer2013A00
-	ldr r1, [r7,#8]
-	ldr r2, dword_80304E4 // =0x6000000 
+	ldr r1, [r7,#8] // destination vram offset for tileset
+	ldr r2, dword_80304E4 // =0x6000000
 	add r1, r1, r2
-	ldr r2, [r7]
+	ldr r2, [r7,#0] // number of uncompressed bytes to copy
 	lsl r2, r2, #2
 	bl CopyByEightWords // (u32 *src, u32 *dest, int byteCount) -> void
 

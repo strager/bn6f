@@ -38,11 +38,8 @@ unknown_18.data starts at 0x02038580+0x538-8 = 0x02038ab0
 
 
 
-Format of comp_84C3C90.bin:
-+0x10: offset of pallete +- 4
-+0x14: sizish of comp_84C3C90?
-+0x18: sizish of comp_84C3C90?
-+0x20: size of tile set?
+
+central town: 0x060004b80 starts bg2 tile set
 
 
 Source: https://forums.therockmanexezone.com/bn-sprite-archive-format-revised-t5403.html
