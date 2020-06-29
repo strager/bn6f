@@ -43,7 +43,23 @@ def decompress(compressed_data: bytes) -> bytes:
         subprocess.check_call([gbagfx_exe, str(compressed_file_path), str(uncompressed_file_path)])
         return uncompressed_file_path.read_bytes()
 
-def get_overworld_sprite_image(rom: ROM, owsprite_address: int):
+def get_overworld_sprite_image(rom: ROM, owsprite_index: int):
+    owsprite_table_address = 0x80a3a44
+    obj_sprite_pointers_address = 0x08032314
+
+    (sprite_index,) = rom.unpack_at_offset(address_to_rom_offset(owsprite_table_address + owsprite_index*0x10 + 0x1), "<B")
+    print(f"sprite_index={sprite_index:#x}")
+    (owsprite_address,) = rom.unpack_at_offset(address_to_rom_offset(obj_sprite_pointers_address + sprite_index*0x4), "<I")
+    # Does top bit set mean we have to use the overworld
+    # sprite format instead of the animation sprite
+    # format?
+    owsprite_address &= ~0x80000000
+    print(f"owsprite_address={owsprite_address:#x}")
+    #owsprite_address = 0x84c3c90
+    #owsprite_address = 0x84c3c90
+    return get_overworld_sprite_image_raw(rom=rom, owsprite_address=owsprite_address)
+
+def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int):
     with tempfile.TemporaryDirectory() as temporary_directory:
         temp_dir = pathlib.Path(temporary_directory)
         (compressed_size,) = rom.unpack_at_offset(address_to_rom_offset(owsprite_address), "<I")

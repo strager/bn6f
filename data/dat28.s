@@ -1969,11 +1969,11 @@ byte_80A3A00:: .byte 0x1, 0x20, 0xFF, 0x2, 0x12, 0x1, 0x0, 0x0, 0x1, 0x20, 0xFF,
 // u8[16]
 //
 // 0: u8
-// 1: u8
+// 1: u8 -- second byte is 0x51 for tree, corresponding to
+//          index of tree sprite in spritelist
 // 2: u8
 // 3: u8
-// 4: u32 -- second byte is 0x51 for tree, corresponding to
-//           index of tree sprite in spritelist
+// 4: u32
 // 8: u8 palette
 // 9: u8
 // a: u16
