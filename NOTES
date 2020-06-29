@@ -1,3 +1,10 @@
+TODO
+[_] Document things in code                 // kinda easy, kinda boring
+[_] Document things in separate text file   // easy, kinda boring
+[_] Reverse MMBN3                           // hard, kinda fun
+[_] Rewrite map generation tools            // kinda easy, boring
+
+
 Decoding the tile map:
 
 dd if=bn6f.gba skip=$((0x4FF308+4)) count=$((256*2)) bs=1 of=acdc-tiles.pal
