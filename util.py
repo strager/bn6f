@@ -89,4 +89,7 @@ def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int):
             str(palette_path),
             "-width", "4",
         ])
-        return PIL.Image.open(tile_set_png_path)
+        tile_set = PIL.Image.open(tile_set_png_path)
+        transparent_tile_set_png_path = temp_dir / "transparent-tile-set.png"
+        tile_set.save(transparent_tile_set_png_path, transparency=0)
+        return PIL.Image.open(transparent_tile_set_png_path)
