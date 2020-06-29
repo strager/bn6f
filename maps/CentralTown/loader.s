@@ -49,6 +49,8 @@ off_804E698: .word byte_804E6AC
 	.word dword_804E6C2
 	.word byte_804E6C6
 	.word byte_804E6C8
+
+    // list of overworld sprite tile sets+palettes to load into memory.
 byte_804E6AC:
     .byte 0x1C, 0x11
     .byte 0x1C, 0x15

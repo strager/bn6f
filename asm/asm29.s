@@ -8,6 +8,7 @@ ho_80A4984:
 	mul r1, r2
 	add r7, r7, r1
         // if Unk_04 is 0x73, then r7 is now 0x080a4174
+        // if Unk_04 is 0x7d, then r7 is now 0x080a4214
 	ldr r0, off_80A499C // =jt_80A49A0 
 	ldrb r1, [r5,#oOverworldMapObject_Unk_08]
 	ldr r0, [r0,r1]

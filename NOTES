@@ -29,7 +29,10 @@ off_8032A20::
 
 
 
-break on 02011ee4 (02011ee0 + 4)
+---break on 02011ee4 (02011ee0 + 4)
+
+break of 020122a4 (020122a0+4) // tree's oOverworldMapObject_Unk_04
+
 
 
 Format of comp_84C3C90.bin:

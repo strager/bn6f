@@ -2,11 +2,11 @@
 // list of object spawns used by SpawnObjectsFromList
 byte_804E74C::
 	// Central Town map 0(?)
-	.byte 0x5 // kind
-	.byte 0x0 // index
-	.byte 0x0, 0x0 // unused?
-	.word -0x840000, -0x180000, 0x000000 // X, Y, Z
-	.word 0x000073 // fifth arg: Unk_04
+c	.byte 0x5 // kind
+d	.byte 0x0 // index
+e	.byte 0x0, 0x0 // unused?
+50	.word -0x840000, -0x180000, 0x000000 // X, Y, Z
+5c	.word 0x000073 // fifth arg: Unk_04
 
 	.byte 0x5
 	.byte 0x0
