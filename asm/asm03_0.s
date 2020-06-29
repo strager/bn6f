@@ -20457,13 +20457,13 @@ loc_80308FA:
 	pop {r4-r7,pc}
 	.balign 4, 0
 EnterMap_RealWorldMapGroupJumptable:
-	.word ACDCTown_EnterMapGroup+1
-	.word CentralTown_EnterMapGroup+1
-	.word CyberAcademy_EnterMapGroup+1
-	.word SeasideTown_EnterMapGroup+1
-	.word GreenTown_EnterMapGroup+1
-	.word SkyTown_EnterMapGroup+1
-	.word ExpoSite_EnterMapGroup+1
+	.word ACDCTown_EnterMapGroup+1 // 0
+	.word CentralTown_EnterMapGroup+1 // 1
+	.word CyberAcademy_EnterMapGroup+1 // 2
+	.word SeasideTown_EnterMapGroup+1 // 3
+	.word GreenTown_EnterMapGroup+1 // 4
+	.word SkyTown_EnterMapGroup+1 // 5
+	.word ExpoSite_EnterMapGroup+1 // 6
 RealWorldMapGroupLoadGFXAnimsJumptable:
 	.word ACDCTown_LoadGFXAnims+1
 	.word CentralTown_LoadGFXAnims+1

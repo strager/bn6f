@@ -20,8 +20,10 @@ def main():
             # mapgroup->mapgraphics table: off_80329A8
 
             MAP_GROUP_CENTRAL_TOWN = 1
+            MAP_GROUP_SEASIDE_TOWN = 3
             mapgroup_to_objectlist_addresses = {
                 MAP_GROUP_CENTRAL_TOWN: 0x804e738,
+                MAP_GROUP_SEASIDE_TOWN: 0x80596e0,
             }
 
             mapgroup_index = int(sys.argv[1], 0)
