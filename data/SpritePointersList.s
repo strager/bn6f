@@ -424,8 +424,8 @@ objSpritePtrs:: .word sprite_849B424
 	.word comp_84A3E08 + 1<<31
 	.word comp_84A40E0 + 1<<31
 	.word comp_84A47F0 + 1<<31
-	.word comp_84A4F0C + 1<<31
-	.word comp_84A502C + 1<<31
+	.word comp_84A4F0C + 1<<31 // cones and bar blocking path in central town
+	.word comp_84A502C + 1<<31 // birb statue and flowers in central town
 	.word sprite_84A53C4
 	.word sprite_84A599C
 	.word comp_84A642C + 1<<31
@@ -484,7 +484,7 @@ objSpritePtrs:: .word sprite_849B424
 	.word sprite_84C0298
 	.word sprite_84C2D34
 	.word spriteWhiteDot
-	.word comp_84C3C90 + 1<<31
+	.word comp_84C3C90 + 1<<31 // overworld tree (in central town)
 	.word comp_84C3F54 + 1<<31
 	.word comp_84C43AC + 1<<31
 	.word sprite_84C5194

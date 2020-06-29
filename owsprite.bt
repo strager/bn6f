@@ -1,6 +1,45 @@
 LittleEndian();
 
-struct Header {
-    int file_size;
+struct FileHeader {
+    uint compressed_size_times_256;
+    uint unknown_4;
+} file_header;
 
-} header;
+local int sprite_header_pos = FTell();
+struct SpriteHeader {
+    uint unknown_8;
+    uint tile_set_offset <format=hex>;
+    uint palette_offset <format=hex>;
+    uint unknown_14_offset <format=hex>;
+    uint unknown_18_offset <format=hex>;
+    uint unknown_1c;
+} sprite_header;
+
+struct Unknown14Entry {
+    ubyte unknown_0;
+    ubyte unknown_1;
+};
+
+struct Unknown18Entry {
+    ubyte unknown_0;
+    ubyte unknown_1;
+    ubyte unknown_2;
+    ubyte unknown_3;
+    ubyte unknown_4;
+};
+
+FSeek(sprite_header.tile_set_offset + sprite_header_pos);
+uint tile_set_size;
+ubyte tile_set[tile_set_size];
+
+FSeek(sprite_header.palette_offset + sprite_header_pos);
+uint palette_size;
+ushort palette[palette_size/2];
+
+FSeek(sprite_header.unknown_14_offset + sprite_header_pos);
+uint unknown_14_entry_count;
+Unknown14Entry unknown_14_entries[unknown_14_entry_count];
+
+FSeek(sprite_header.unknown_18_offset + sprite_header_pos);
+uint unknown_18_entry_count;
+Unknown18Entry unknown_18_entries[unknown_18_entry_count];
