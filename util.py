@@ -65,15 +65,15 @@ def get_overworld_sprite_image(rom: ROM, owsprite_index: int):
         address_to_rom_offset(owsprite_table_address + owsprite_index*0x10),
         "<BBBBIBBHHH",
     )
-    print(f"sprite_index={sprite_index:#x} sprite_subindex={sprite_subindex:#x}")
-    print(( _unknown_0, sprite_index, sprite_subindex, _unknown_3, _unknown_4, palette_index, _unknown_9, _unknown_a, _unknown_c, _unknown_e,))
+    #print(f"sprite_index={sprite_index:#x} sprite_subindex={sprite_subindex:#x}")
+    #print(( _unknown_0, sprite_index, sprite_subindex, _unknown_3, _unknown_4, palette_index, _unknown_9, _unknown_a, _unknown_c, _unknown_e,))
     (owsprite_address,) = rom.unpack_at_offset(address_to_rom_offset(obj_sprite_pointers_address + sprite_index*0x4), "<I")
     # Does top bit set mean we have to use the overworld
     # sprite format instead of the animation sprite
     # format?
     compressed = bool(owsprite_address & 0x80000000)
     owsprite_address &= ~0x80000000
-    print(f"owsprite_address={owsprite_address:#x}")
+    #print(f"owsprite_address={owsprite_address:#x}")
     #owsprite_address = 0x84c3c90
     #owsprite_address = 0x84c3c90
     return get_overworld_sprite_image_raw(rom=rom, owsprite_address=owsprite_address, sprite_subindex=sprite_subindex, compressed=compressed)
@@ -113,7 +113,7 @@ def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int, sprite_subin
                 PALETTE_SIZE)
 
         (tile_set_size,) = struct.unpack_from("<I", data, tile_set_offset)
-        print(f"tile_set {tile_set_offset:#x}..{tile_set_offset+tile_set_size:#x}")
+        #print(f"tile_set {tile_set_offset:#x}..{tile_set_offset+tile_set_size:#x}")
         tile_set_data = data[tile_set_offset+4:tile_set_offset+4+tile_set_size]
 
         tile_sets = [

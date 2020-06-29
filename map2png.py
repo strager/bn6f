@@ -121,11 +121,22 @@ def main():
                     objectlist_address += 20
                     if sprite_kind == 0xff:
                         break
-                    print(f"\t.byte {sprite_kind:#02x}")
-                    print(f"\t.byte {sprite_index:#02x}")
-                    print(f"\t.byte {_unused_1:#02x}, {_unused_2:#02x}")
-                    print(f"\t.word {sprite_x:#08x}, {sprite_y:#08x}, {sprite_z:#08x}")
-                    print(f"\t.word {sprite_unknown_4:#08x}\n")
+                    #print(f"\t.byte {sprite_kind:#02x}")
+                    #print(f"\t.byte {sprite_index:#02x}")
+                    #print(f"\t.byte {_unused_1:#02x}, {_unused_2:#02x}")
+                    #print(f"\t.word {sprite_x:#08x}, {sprite_y:#08x}, {sprite_z:#08x}")
+                    #print(f"\t.word {sprite_unknown_4:#08x}\n")
+
+                    print(f"\tmap_object_spawn_data_struct [")
+                    print(f"\t\tkind: {sprite_kind:#02x},")
+                    print(f"\t\tindex: {sprite_index:#02x},")
+                    print(f"\t\tx: {sprite_x:#08x},")
+                    print(f"\t\ty: {sprite_y:#08x},")
+                    print(f"\t\tz: {sprite_z:#08x},")
+                    print(f"\t\tobject_id: {sprite_unknown_4:#08x},")
+                    print(f"\t]")
+                    print("")
+
                     (x, y) = game_coordinate_to_screen_coordinates(map_width=map_width, map_height=map_height, game_x=sprite_x, game_y=sprite_y, game_z=sprite_z)
                     sprite_image = get_overworld_sprite_image(rom=rom, owsprite_index=sprite_unknown_4).convert("RGBA")
                     top_left_x = int(x - sprite_image.width/2)
@@ -133,7 +144,7 @@ def main():
                     if top_left_y < 0 or top_left_x < 0:
                         # @@@ this shouldn't happen.
                         continue
-                    print(top_left_x, top_left_y)
+                    #print(top_left_x, top_left_y)
                     area_image.alpha_composite(sprite_image, (top_left_x, top_left_y), (0, 0, sprite_image.width, sprite_image.height))
                     if DEBUG_PINK:
                         for xi in range(10):
