@@ -21,7 +21,7 @@ struct Unknown14Entry {
 };
 
 struct Unknown18Entry {
-    ubyte unknown_0;
+    ubyte tile_index;
     ubyte unknown_1;
     ubyte unknown_2;
     ubyte unknown_3;
