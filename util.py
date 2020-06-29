@@ -71,7 +71,9 @@ def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int):
         (_compressed_size, _unknown_4, _unknown_8, tile_set_offset, palette_offset, _unknown_14, _unknown_18, _unknown_1c) = struct.unpack_from("<IIIIIIII", data, 0)
 
         (palette_size,) = struct.unpack_from("<I", data, palette_offset+8)
+        palette_size = 16*2 # TODO: support multiple palettes
         palette_data = data[palette_offset+8+4:palette_offset+8+4+palette_size]
+        print(f"palette {palette_offset+8:#x}..{palette_offset+8+palette_size:#x}")
 
         (tile_set_size,) = struct.unpack_from("<I", data, tile_set_offset+8)
         print(f"tile_set {tile_set_offset+8:#x}..{tile_set_offset+8+tile_set_size:#x}")
