@@ -80,7 +80,7 @@ def main():
                     screen_x = game_tile_x * (ISO_TILE_WIDTH / 2) + game_tile_y * (ISO_TILE_WIDTH / 2) + screen_start_x
                     screen_y = (
                         -(game_tile_x * (ISO_TILE_HEIGHT / 2) - game_tile_y * (ISO_TILE_HEIGHT / 2)) + screen_start_y
-                    ) - game_tile_z
+                    ) - game_tile_z + 2
                     return (screen_x, screen_y)
 
                 address = 0x0804e74c
