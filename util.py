@@ -68,13 +68,14 @@ def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int):
         compressed_data = rom.file.read(compressed_size)
         data = decompress(compressed_data)
 
-        (_compressed_size, _unknown_4, _unknown_8, _unknown_c, palette_offset, _unknown_14, _unknown_18, _unknown_1c, tile_set_size) = struct.unpack_from("<IIIIIIIII", data, 0)
-        tile_set_offset = 0x24
+        (_compressed_size, _unknown_4, _unknown_8, tile_set_offset, palette_offset, _unknown_14, _unknown_18, _unknown_1c) = struct.unpack_from("<IIIIIIII", data, 0)
 
-        PALETTE_SIZE = 16*2
-        palette_data = data[palette_offset+0xc:palette_offset+0xc+PALETTE_SIZE]
+        (palette_size,) = struct.unpack_from("<I", data, palette_offset+8)
+        palette_data = data[palette_offset+8+4:palette_offset+8+4+palette_size]
 
-        tile_set_data = data[tile_set_offset:tile_set_offset+tile_set_size]
+        (tile_set_size,) = struct.unpack_from("<I", data, tile_set_offset+8)
+        print(f"tile_set {tile_set_offset+8:#x}..{tile_set_offset+8+tile_set_size:#x}")
+        tile_set_data = data[tile_set_offset+8+4:tile_set_offset+8+4+tile_set_size]
 
         tile_set_png_path = temp_dir / "tile-set.png"
         tile_set_data_path = temp_dir / "tile-set.4bpp"
