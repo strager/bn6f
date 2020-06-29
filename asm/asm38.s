@@ -859,8 +859,8 @@ sub_30061E8:
 	push {r6}
 	ldr r4, off_3006308 // =eCamera+76
 	ldrb r4, [r4]
-	ldrb r7, [r5,#2] ; TypeAndSpriteOffset
-	lsr r7, r7, #4 ; Type
+	ldrb r7, [r5,#2] // TypeAndSpriteOffset
+	lsr r7, r7, #4 // Type
 	lsl r7, r7, #4
 	add r5, r5, r7
 	ldr r2, off_300630C // =byte_20098A8
