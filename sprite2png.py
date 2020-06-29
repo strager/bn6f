@@ -5,6 +5,7 @@ import struct
 import subprocess
 import tempfile
 import typing
+from util import ObjectListEntry
 
 gbagfx_exe = pathlib.Path(__file__).parent / "tools" / "gbagfx" / "gbagfx"
 TILE_WIDTH = 8
@@ -117,34 +118,6 @@ def main():
                     sprite_png_path = pathlib.Path(f"sprite-{sprite_address:08x}-{animation_index:03}.png")
                     sprite.save(sprite_png_path)
                     print(f"wrote {sprite_png_path}")
-
-class ObjectListEntry(typing.NamedTuple):
-    tile_index: int
-    x: int
-    y: int
-    shape_flag: int
-    palette_index: int
-    size_flag: int
-    h_flip: bool
-    v_flip: bool
-
-    @property
-    def size(self) -> typing.Tuple[int, int]:
-        size_and_shape_to_width_and_height = {
-            (0, 0): (8, 8),
-            (0, 1): (16, 8),
-            (0, 2): (8, 16),
-            (1, 0): (16, 16),
-            (1, 1): (32, 8),
-            (1, 2): (8, 32),
-            (2, 0): (32, 32),
-            (2, 1): (32, 16),
-            (2, 2): (16, 32),
-            (3, 0): (64, 64),
-            (3, 1): (64, 32),
-            (3, 2): (32, 64),
-        }
-        return size_and_shape_to_width_and_height[(self.size_flag, self.shape_flag)]
 
 if __name__ == "__main__":
     main()

@@ -98,7 +98,7 @@ def main():
                     (x, y) = game_coordinate_to_screen_coordinates(map_width=map_width, map_height=map_height, game_x=sprite_x, game_y=sprite_y, game_z=sprite_z)
                     sprite_image = get_overworld_sprite_image(rom=rom, owsprite_index=sprite_unknown_4).convert("RGBA")
                     top_left_x = int(x - sprite_image.width/2)
-                    top_left_y = int(y - sprite_image.height)
+                    top_left_y = int(y - sprite_image.height/2)
                     if top_left_y < 0:
                         # @@@ this shouldn't happen.
                         continue

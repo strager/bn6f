@@ -68,7 +68,7 @@ def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int):
         compressed_data = rom.file.read(compressed_size)
         data = decompress(compressed_data)
 
-        (_compressed_size, _unknown_4, _unknown_8, tile_set_offset, palette_offset, _unknown_14, _unknown_18, _unknown_1c) = struct.unpack_from("<IIIIIIII", data, 0)
+        (_compressed_size, _unknown_4, _unknown_8, tile_set_offset, palette_offset, _unknown_14, object_list_offset, _unknown_1c) = struct.unpack_from("<IIIIIIII", data, 0)
 
         (palette_size,) = struct.unpack_from("<I", data, palette_offset+8)
         palette_size = 16*2 # TODO: support multiple palettes
@@ -90,9 +90,69 @@ def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int):
             str(tile_set_png_path),
             "-palette",
             str(palette_path),
-            "-width", "4",
+            "-width", "1",
         ])
         tile_set = PIL.Image.open(tile_set_png_path)
         transparent_tile_set_png_path = temp_dir / "transparent-tile-set.png"
         tile_set.save(transparent_tile_set_png_path, transparency=0)
-        return PIL.Image.open(transparent_tile_set_png_path)
+        tile_set = PIL.Image.open(transparent_tile_set_png_path).convert("RGBA")
+
+        object_list = []
+        while True:
+            (tile_index, x, y, flags) = struct.unpack_from("<BbbH", data, object_list_offset + 8+4)
+            if tile_index == 0xff:
+                break
+            object_list.append(ObjectListEntry(
+                tile_index=tile_index,
+                x=x,
+                y=y,
+                size_flag = (flags >> 0) & 3,
+                h_flip = (flags & (1<<6)) != 0,
+                v_flip = (flags & (1<<7)) != 0,
+                shape_flag = (flags >> 8) & 3,
+                palette_index = (flags >> 12),
+            ))
+            object_list_offset += 5
+
+        sprite = PIL.Image.new("RGBA", (256, 256))
+        for object_list_entry in object_list:
+            (object_width, object_height) = object_list_entry.size
+            tile_index = object_list_entry.tile_index
+            for yi in range(0, object_height, TILE_HEIGHT):
+                for xi in range(0, object_width, TILE_WIDTH):
+                    sprite.alpha_composite(tile_set, (object_list_entry.x + xi + 128, object_list_entry.y + yi + 128), (0, tile_index * TILE_HEIGHT, TILE_WIDTH, tile_index * TILE_HEIGHT + TILE_HEIGHT))
+                    tile_index += 1
+        return sprite
+
+
+class ObjectListEntry(typing.NamedTuple):
+    tile_index: int
+    x: int
+    y: int
+    shape_flag: int
+    palette_index: int
+    size_flag: int
+    h_flip: bool
+    v_flip: bool
+
+    @property
+    def size(self) -> typing.Tuple[int, int]:
+        size_and_shape_to_width_and_height = {
+            (0, 0): (8, 8),
+            (0, 1): (16, 8),
+            (0, 2): (8, 16),
+            (0, 3): (8, 16), # @@@ probably wrong
+            (1, 0): (16, 16),
+            (1, 1): (32, 8),
+            (1, 2): (8, 32),
+            (1, 3): (8, 32), # @@@ probably wrong
+            (2, 0): (32, 32),
+            (2, 1): (32, 16),
+            (2, 2): (16, 32),
+            (2, 3): (16, 32), # @@@ probably wrong
+            (3, 0): (64, 64),
+            (3, 1): (64, 32),
+            (3, 2): (32, 64),
+            (3, 3): (32, 64), # @@@ probably wrong
+        }
+        return size_and_shape_to_width_and_height[(self.size_flag, self.shape_flag)]

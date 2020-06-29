@@ -41,5 +41,7 @@ uint unknown_14_entry_count;
 Unknown14Entry unknown_14_entries[unknown_14_entry_count];
 
 FSeek(sprite_header.unknown_18_offset + sprite_header_pos);
-uint unknown_18_entry_count;
-Unknown18Entry unknown_18_entries[unknown_18_entry_count];
+uint unknown_18_header;
+do {
+    Unknown18Entry unknown_18_entry;
+} while (unknown_18_entry.tile_index != 0xff);

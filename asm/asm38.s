@@ -911,9 +911,13 @@ loc_300623E:
 	mov r7, #0
 	mov r4, #0x80
 	lsl r4, r4, #0x18
+        // this loop decodes unknown_18 in overworld
+        // sprites.
+        // called every frame?
 loc_3006258:
+        // r2 is decompressed comp_84C3C90.unknown_18.data = 0x02038580+0x538-8 = 0x02038ab0, for example
 	ldrb r3, [r2]
-	cmp r3, #0xff
+	cmp r3, #0xff // ff-terminated list
 	beq loc_30062CC
 	mov r3, #1
 	ldrsb r3, [r2,r3]

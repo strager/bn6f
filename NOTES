@@ -33,6 +33,9 @@ off_8032A20::
 
 break of 020122a4 (020122a0+4) // tree's oOverworldMapObject_Unk_04
 
+0x02038580 is decompressed comp_84C3C90 + 8
+unknown_18.data starts at 0x02038580+0x538-8 = 0x02038ab0
+
 
 
 Format of comp_84C3C90.bin:
