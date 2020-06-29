@@ -5,17 +5,7 @@ import struct
 import subprocess
 import tempfile
 import typing
-
-gbagfx_exe = pathlib.Path(__file__).parent / "tools" / "gbagfx" / "gbagfx"
-
-def address_to_rom_offset(address: int) -> int:
-    return address - 0x08000000
-
-def chunk(data: bytes, bytes_per_chunk: int) -> typing.List[bytes]:
-    chunks = []
-    for chunk_start_index in range(0, len(data), bytes_per_chunk):
-        chunks.append(data[chunk_start_index:chunk_start_index+bytes_per_chunk])
-    return chunks
+from util import TILE_WIDTH, TILE_HEIGHT, address_to_rom_offset, gbagfx_exe, decompress, chunk
 
 def main():
     with tempfile.TemporaryDirectory() as temporary_directory:
@@ -109,18 +99,6 @@ def main():
 
                 area_image.save(output_file_name)
                 print(f"wrote: {output_file_name}")
-
-def decompress(compressed_data: bytes) -> bytes:
-    with tempfile.TemporaryDirectory() as temporary_directory:
-        temp_dir = pathlib.Path(temporary_directory)
-        compressed_file_path = temp_dir / "map.bin.lz"
-        uncompressed_file_path = temp_dir / "map.bin"
-        compressed_file_path.write_bytes(compressed_data)
-        subprocess.check_call([gbagfx_exe, str(compressed_file_path), str(uncompressed_file_path)])
-        return uncompressed_file_path.read_bytes()
-
-TILE_WIDTH = 8
-TILE_HEIGHT = 8
 
 def create_image_for_map(tile_set, layer_map_datas: typing.Sequence[bytes], map_width: int, map_height: int):
     tile_set_rgba = tile_set.convert("RGBA")
