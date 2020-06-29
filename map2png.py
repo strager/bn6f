@@ -111,7 +111,6 @@ def main():
                 #print(f"{objectlist_addresses:#x}")
                 (objectlist_address,) = rom.unpack_at_address(objectlist_addresses + map_index*4, "<I")
                 #print(f"{objectlist_address:#x}")
-                objectlist_address = 0x0804e74c
                 while True:
                     (sprite_kind, sprite_index, _unused_1, _unused_2, sprite_x, sprite_y, sprite_z, sprite_unknown_4) = rom.unpack_at_offset(
                         address_to_rom_offset(objectlist_address),
