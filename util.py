@@ -17,6 +17,9 @@ class ROM:
         self.file.seek(rom_offset)
         return self.unpack(format)
 
+    def unpack_at_address(self, address: int, format: str):
+        return self.unpack_at_offset(address_to_rom_offset(address), format)
+
     def unpack(self, format: str):
         size = struct.calcsize(format)
         data = self.file.read(size)

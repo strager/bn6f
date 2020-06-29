@@ -109,10 +109,10 @@ CentralTown_SpawnMapObjectsForMap:
 	.pool // off_804E734
 off_804E738:
 	// <endpool>
-	.word byte_804E74C // list of object spawns used by SpawnObjectsFromList
-	.word byte_804E87C
-	.word dword_804E8D0
-	.word dword_804E8D4
-	.word byte_804E8D8
+	.word byte_804E74C // list of object spawns used by SpawnObjectsFromList for central town main outdoor area
+	.word byte_804E87C // map #1
+	.word dword_804E8D0 // map #2
+	.word dword_804E8D4 // map #3
+	.word byte_804E8D8 // map #4
 	thumb_func_end CentralTown_SpawnMapObjectsForMap
 /*For debugging purposes, connect comment at any range!*/

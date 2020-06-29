@@ -1,11 +1,12 @@
+from util import TILE_WIDTH, TILE_HEIGHT, address_to_rom_offset, gbagfx_exe, decompress, chunk, get_overworld_sprite_image, ROM
 import PIL.Image
 import os
 import pathlib
 import struct
 import subprocess
+import sys
 import tempfile
 import typing
-from util import TILE_WIDTH, TILE_HEIGHT, address_to_rom_offset, gbagfx_exe, decompress, chunk, get_overworld_sprite_image, ROM
 
 DEBUG_PINK = False
 
@@ -14,11 +15,23 @@ def main():
         temp_dir = pathlib.Path(temporary_directory)
         with open("bn6f.gba", "rb") as rom_file:
             rom = ROM(rom_file)
-            table_start_address = 0x8032a20
-            for area_number in [2]:
-                print(f"=== area #{area_number} in table 0x{table_start_address:08x} ===")
 
-                rom_file.seek(address_to_rom_offset(table_start_address + 0xc*area_number))
+            # map->objectlist table for centraltown: off_804E738
+            # mapgroup->mapgraphics table: off_80329A8
+
+            MAP_GROUP_CENTRAL_TOWN = 1
+            mapgroup_to_objectlist_addresses = {
+                MAP_GROUP_CENTRAL_TOWN: 0x804e738,
+            }
+
+            mapgroup_index = int(sys.argv[1], 0)
+            map_index = int(sys.argv[2], 0)
+
+            (table_start_address,) = rom.unpack_at_address(0x80329a8 + mapgroup_index*4, "<I")
+            for _ in [0]: # @@@ delete plz
+                print(f"=== area #{map_index} in table 0x{table_start_address:08x} ===")
+
+                rom_file.seek(address_to_rom_offset(table_start_address + 0xc*map_index))
                 area_header = rom_file.read(3 * 4)
                 (tile_set_address, palettes_address, maps_address) = struct.unpack("<III", area_header)
 
@@ -78,7 +91,7 @@ def main():
 
                 tile_set = PIL.Image.open(temp_tile_set_png_path)
                 area_image = create_image_for_map(tile_set=tile_set, layer_map_datas=[bottom_layer_maps_data, top_layer_maps_data], map_width=map_width, map_height=map_height)
-                output_file_name = f"area-{table_start_address:08x}-{area_number}.png"
+                output_file_name = f"area-{table_start_address:08x}-{map_index}.png"
 
                 def game_coordinate_to_screen_coordinates(map_width: int, map_height: int, game_x: int, game_y: int, game_z: int) -> typing.Tuple[float, float]:
                     ISO_TILE_WIDTH = 64.0/32.0
@@ -94,13 +107,17 @@ def main():
                     ) - game_tile_z + 2
                     return (screen_x, screen_y)
 
-                address = 0x0804e74c
+                objectlist_addresses = mapgroup_to_objectlist_addresses[mapgroup_index]
+                #print(f"{objectlist_addresses:#x}")
+                (objectlist_address,) = rom.unpack_at_address(objectlist_addresses + map_index*4, "<I")
+                #print(f"{objectlist_address:#x}")
+                objectlist_address = 0x0804e74c
                 while True:
                     (sprite_kind, sprite_index, _unused_1, _unused_2, sprite_x, sprite_y, sprite_z, sprite_unknown_4) = rom.unpack_at_offset(
-                        address_to_rom_offset(address),
+                        address_to_rom_offset(objectlist_address),
                         "<BBBBiiiI",
                     )
-                    address += 20
+                    objectlist_address += 20
                     if sprite_kind == 0xff:
                         break
                     print(f"\t.byte {sprite_kind:#02x}")
@@ -112,7 +129,7 @@ def main():
                     sprite_image = get_overworld_sprite_image(rom=rom, owsprite_index=sprite_unknown_4).convert("RGBA")
                     top_left_x = int(x - sprite_image.width/2)
                     top_left_y = int(y - sprite_image.height/2)
-                    if top_left_y < 0:
+                    if top_left_y < 0 or top_left_x < 0:
                         # @@@ this shouldn't happen.
                         continue
                     print(top_left_x, top_left_y)
