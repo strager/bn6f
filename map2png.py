@@ -5,12 +5,13 @@ import struct
 import subprocess
 import tempfile
 import typing
-from util import TILE_WIDTH, TILE_HEIGHT, address_to_rom_offset, gbagfx_exe, decompress, chunk
+from util import TILE_WIDTH, TILE_HEIGHT, address_to_rom_offset, gbagfx_exe, decompress, chunk, get_overworld_sprite_image, ROM
 
 def main():
     with tempfile.TemporaryDirectory() as temporary_directory:
         temp_dir = pathlib.Path(temporary_directory)
         with open("bn6f.gba", "rb") as rom_file:
+            rom = ROM(rom_file)
             table_start_address = 0x8032a20
             for area_number in [2]:
                 print(f"=== area #{area_number} in table 0x{table_start_address:08x} ===")
@@ -80,19 +81,23 @@ def main():
                     )
                     return (screen_x, screen_y)
 
-                rom_file.seek(address_to_rom_offset(0x0804e74c))
+                address = 0x0804e74c
                 while True:
-                    sprite_descriptor = rom_file.read(5 * 4)
-                    (sprite_kind, sprite_index, _unused_1, _unused_2, sprite_x, sprite_y, sprite_z, sprite_unknown_4) = struct.unpack("<BBBBiiiI", sprite_descriptor)
+                    (sprite_kind, sprite_index, _unused_1, _unused_2, sprite_x, sprite_y, sprite_z, sprite_unknown_4) = rom.unpack_at_offset(
+                        address_to_rom_offset(address),
+                        "<BBBBiiiI",
+                    )
+                    address += 20
                     if sprite_kind == 0xff:
                         break
-                    #print(f"\t.byte {sprite_kind:#02x}")
-                    #print(f"\t.byte {sprite_index:#02x}")
-                    #print(f"\t.byte {_unused_1:#02x}, {_unused_2:#02x}")
-                    #print(f"\t.word {sprite_x:#08x}, {sprite_y:#08x}, {sprite_z:#08x}")
-                    #print(f"\t.word {sprite_unknown_4:#08x}\n")
-                    #if sprite_z == 0:
+                    print(f"\t.byte {sprite_kind:#02x}")
+                    print(f"\t.byte {sprite_index:#02x}")
+                    print(f"\t.byte {_unused_1:#02x}, {_unused_2:#02x}")
+                    print(f"\t.word {sprite_x:#08x}, {sprite_y:#08x}, {sprite_z:#08x}")
+                    print(f"\t.word {sprite_unknown_4:#08x}\n")
                     (x, y) = game_coordinate_to_screen_coordinates(map_width=map_width, map_height=map_height, game_x=sprite_x, game_y=sprite_y, game_z=sprite_z)
+                    sprite_image = get_overworld_sprite_image(rom=rom, owsprite_index=sprite_unknown_4).convert("RGBA")
+                    area_image.alpha_composite(sprite_image, (int(x), int(y)), (0, 0, sprite_image.width, sprite_image.height))
                     for xi in range(10):
                         for yi in range(10):
                             area_image.putpixel((int(x + xi), int(y + yi)), (0xff, 0x00, 0xff, 0xff))
