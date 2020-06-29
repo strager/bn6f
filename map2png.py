@@ -97,7 +97,13 @@ def main():
                     print(f"\t.word {sprite_unknown_4:#08x}\n")
                     (x, y) = game_coordinate_to_screen_coordinates(map_width=map_width, map_height=map_height, game_x=sprite_x, game_y=sprite_y, game_z=sprite_z)
                     sprite_image = get_overworld_sprite_image(rom=rom, owsprite_index=sprite_unknown_4).convert("RGBA")
-                    area_image.alpha_composite(sprite_image, (int(x), int(y)), (0, 0, sprite_image.width, sprite_image.height))
+                    top_left_x = int(x - sprite_image.width/2)
+                    top_left_y = int(y - sprite_image.height)
+                    if top_left_y < 0:
+                        # @@@ this shouldn't happen.
+                        continue
+                    print(top_left_x, top_left_y)
+                    area_image.alpha_composite(sprite_image, (top_left_x, top_left_y), (0, 0, sprite_image.width, sprite_image.height))
                     for xi in range(10):
                         for yi in range(10):
                             area_image.putpixel((int(x + xi), int(y + yi)), (0xff, 0x00, 0xff, 0xff))
