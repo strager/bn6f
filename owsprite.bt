@@ -1,0 +1,6 @@
+LittleEndian();
+
+struct Header {
+    int file_size;
+
+} header;
