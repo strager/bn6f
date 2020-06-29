@@ -68,34 +68,22 @@ def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int):
         compressed_data = rom.file.read(compressed_size)
         data = decompress(compressed_data)
 
-        (_compressed_size, _unknown_4, _unknown_8, tile_set_offset, palette_offset, _unknown_14, object_list_offset, _unknown_1c) = struct.unpack_from("<IIIIIIII", data, 0)
+        (_compressed_size, _unknown_4, _unknown_8, tile_set_offset, palettes_offset, _unknown_14, object_list_offset, _unknown_1c) = struct.unpack_from("<IIIIIIII", data, 0)
 
-        (palette_size,) = struct.unpack_from("<I", data, palette_offset+8)
-        palette_size = 16*2 # TODO: support multiple palettes
-        palette_data = data[palette_offset+8+4:palette_offset+8+4+palette_size]
-        print(f"palette {palette_offset+8:#x}..{palette_offset+8+palette_size:#x}")
+        (palettes_size,) = struct.unpack_from("<I", data, palettes_offset+8)
+        PALETTE_SIZE = 16*2
+        palette_datas = chunk(
+                data[palettes_offset+8+4:palettes_offset+8+4+palettes_size],
+                PALETTE_SIZE)
 
         (tile_set_size,) = struct.unpack_from("<I", data, tile_set_offset+8)
         print(f"tile_set {tile_set_offset+8:#x}..{tile_set_offset+8+tile_set_size:#x}")
         tile_set_data = data[tile_set_offset+8+4:tile_set_offset+8+4+tile_set_size]
 
-        tile_set_png_path = temp_dir / "tile-set.png"
-        tile_set_data_path = temp_dir / "tile-set.4bpp"
-        tile_set_data_path.write_bytes(tile_set_data)
-        palette_path = temp_dir / "tile-set.pal"
-        palette_path.write_bytes(palette_data)
-        subprocess.check_call([
-            gbagfx_exe,
-            str(tile_set_data_path),
-            str(tile_set_png_path),
-            "-palette",
-            str(palette_path),
-            "-width", "1",
-        ])
-        tile_set = PIL.Image.open(tile_set_png_path)
-        transparent_tile_set_png_path = temp_dir / "transparent-tile-set.png"
-        tile_set.save(transparent_tile_set_png_path, transparency=0)
-        tile_set = PIL.Image.open(transparent_tile_set_png_path).convert("RGBA")
+        tile_sets = [
+            make_sprite_tile_set_image(tile_set_data=tile_set_data, palette_data=palette_data)
+            for palette_data in palette_datas
+        ]
 
         object_list = []
         while True:
@@ -120,9 +108,30 @@ def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int):
             tile_index = object_list_entry.tile_index
             for yi in range(0, object_height, TILE_HEIGHT):
                 for xi in range(0, object_width, TILE_WIDTH):
-                    sprite.alpha_composite(tile_set, (object_list_entry.x + xi + 128, object_list_entry.y + yi + 128), (0, tile_index * TILE_HEIGHT, TILE_WIDTH, tile_index * TILE_HEIGHT + TILE_HEIGHT))
+                    sprite.alpha_composite(tile_sets[object_list_entry.palette_index], (object_list_entry.x + xi + 128, object_list_entry.y + yi + 128), (0, tile_index * TILE_HEIGHT, TILE_WIDTH, tile_index * TILE_HEIGHT + TILE_HEIGHT))
                     tile_index += 1
         return sprite
+
+def make_sprite_tile_set_image(tile_set_data: bytes, palette_data: bytes):
+    with tempfile.TemporaryDirectory() as temporary_directory:
+        temp_dir = pathlib.Path(temporary_directory)
+        tile_set_png_path = temp_dir / "tile-set.png"
+        tile_set_data_path = temp_dir / "tile-set.4bpp"
+        tile_set_data_path.write_bytes(tile_set_data)
+        palette_path = temp_dir / "tile-set.pal"
+        palette_path.write_bytes(palette_data)
+        subprocess.check_call([
+            gbagfx_exe,
+            str(tile_set_data_path),
+            str(tile_set_png_path),
+            "-palette",
+            str(palette_path),
+            "-width", "1",
+        ])
+        tile_set = PIL.Image.open(tile_set_png_path)
+        transparent_tile_set_png_path = temp_dir / "transparent-tile-set.png"
+        tile_set.save(transparent_tile_set_png_path, transparency=0)
+        return PIL.Image.open(transparent_tile_set_png_path).convert("RGBA")
 
 
 class ObjectListEntry(typing.NamedTuple):
@@ -141,18 +150,18 @@ class ObjectListEntry(typing.NamedTuple):
             (0, 0): (8, 8),
             (0, 1): (16, 8),
             (0, 2): (8, 16),
-            (0, 3): (8, 16), # @@@ probably wrong
+            #(0, 3): (8, 16), # @@@ probably wrong
             (1, 0): (16, 16),
             (1, 1): (32, 8),
             (1, 2): (8, 32),
-            (1, 3): (8, 32), # @@@ probably wrong
+            #(1, 3): (8, 32), # @@@ probably wrong
             (2, 0): (32, 32),
             (2, 1): (32, 16),
             (2, 2): (16, 32),
-            (2, 3): (16, 32), # @@@ probably wrong
+            #(2, 3): (16, 32), # @@@ probably wrong
             (3, 0): (64, 64),
             (3, 1): (64, 32),
             (3, 2): (32, 64),
-            (3, 3): (32, 64), # @@@ probably wrong
+            #(3, 3): (32, 64), # @@@ probably wrong
         }
         return size_and_shape_to_width_and_height[(self.size_flag, self.shape_flag)]
