@@ -40,16 +40,21 @@ def main():
                 palettes = chunk(palettes_data, 256*2)
                 palette = palettes[0]
 
-                rom_file.seek(address_to_rom_offset(tile_set_address))
-                print(f"tile_set_address={tile_set_address:#x}")
-                tile_set_header = rom_file.read(0xc)
-                (tile_set_uncompressed_size, tile_set_data_offset, tile_set_vram_offset) = struct.unpack("<III", tile_set_header)
-                (tile_set_compressed_size,) = rom.unpack_at_offset(address_to_rom_offset(tile_set_address + tile_set_data_offset), "<I")
-                tile_set_compressed_size = (tile_set_compressed_size >> 8) & 0xffffff
-                print(f"{tile_set_compressed_size:#x}")
-                rom_file.seek(address_to_rom_offset(tile_set_address + tile_set_data_offset))
-                tile_set_compressed_data = rom_file.read(tile_set_compressed_size)
-                tile_set_data = decompress(tile_set_compressed_data)
+                #tile_set_vram = bytearray("\x00" * )
+                tile_set_data = bytearray(b"\x00" * 0x10000)
+                for tile_set_number in (0, 1):
+                    rom_file.seek(address_to_rom_offset(tile_set_address + tile_set_number*0xc))
+                    print(f"tile_set_address={tile_set_address:#x}")
+                    tile_set_header = rom_file.read(0xc)
+                    (tile_set_uncompressed_word_size, tile_set_data_offset, tile_set_vram_offset) = struct.unpack("<III", tile_set_header)
+                    tile_set_uncompressed_size = tile_set_uncompressed_word_size * 4
+                    (tile_set_compressed_size,) = rom.unpack_at_offset(address_to_rom_offset(tile_set_address + tile_set_data_offset), "<I")
+                    tile_set_compressed_size = (tile_set_compressed_size >> 8) & 0xffffff
+                    print(f"{tile_set_compressed_size:#x}")
+                    rom_file.seek(address_to_rom_offset(tile_set_address + tile_set_data_offset))
+                    tile_set_compressed_data = rom_file.read(tile_set_compressed_size)
+                    tile_set_uncompressed_data = decompress(tile_set_compressed_data)
+                    tile_set_data[tile_set_vram_offset:tile_set_vram_offset+tile_set_uncompressed_size] = tile_set_uncompressed_data[:tile_set_uncompressed_size]
 
                 tile_set_png_path = temp_dir / "tile-set.png"
                 tile_set_data_path = temp_dir / "tile-set.8bpp"
