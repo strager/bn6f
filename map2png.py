@@ -68,17 +68,17 @@ def main():
                 output_file_name = f"area-{table_start_address:08x}-{area_number}.png"
 
                 def game_coordinate_to_screen_coordinates(map_width: int, map_height: int, game_x: int, game_y: int, game_z: int) -> typing.Tuple[float, float]:
-                    # TODO(strager): Use game_z.
                     ISO_TILE_WIDTH = 64.0/32.0
                     ISO_TILE_HEIGHT = 32.0/32.0
                     game_tile_x = game_x / (1<<16)
                     game_tile_y = game_y / (1<<16)
+                    game_tile_z = game_z / (1<<16)
                     screen_start_x = map_width*TILE_WIDTH/2
                     screen_start_y = map_height*TILE_HEIGHT/2
                     screen_x = game_tile_x * (ISO_TILE_WIDTH / 2) + game_tile_y * (ISO_TILE_WIDTH / 2) + screen_start_x
                     screen_y = (
                         -(game_tile_x * (ISO_TILE_HEIGHT / 2) - game_tile_y * (ISO_TILE_HEIGHT / 2)) + screen_start_y
-                    )
+                    ) - game_tile_z
                     return (screen_x, screen_y)
 
                 address = 0x0804e74c
