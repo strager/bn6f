@@ -66,51 +66,62 @@ def get_overworld_sprite_image_raw(rom: ROM, owsprite_address: int):
         compressed_size >>= 8
         rom.file.seek(address_to_rom_offset(owsprite_address))
         compressed_data = rom.file.read(compressed_size)
-        data = decompress(compressed_data)
+        data_with_header = decompress(compressed_data)
 
-        (_compressed_size, _unknown_4, _unknown_8, tile_set_offset, palettes_offset, _unknown_14, object_list_offset, _unknown_1c) = struct.unpack_from("<IIIIIIII", data, 0)
-
-        (palettes_size,) = struct.unpack_from("<I", data, palettes_offset+8)
-        PALETTE_SIZE = 16*2
-        palette_datas = chunk(
-                data[palettes_offset+8+4:palettes_offset+8+4+palettes_size],
-                PALETTE_SIZE)
-
-        (tile_set_size,) = struct.unpack_from("<I", data, tile_set_offset+8)
-        print(f"tile_set {tile_set_offset+8:#x}..{tile_set_offset+8+tile_set_size:#x}")
-        tile_set_data = data[tile_set_offset+8+4:tile_set_offset+8+4+tile_set_size]
-
-        tile_sets = [
-            make_sprite_tile_set_image(tile_set_data=tile_set_data, palette_data=palette_data)
-            for palette_data in palette_datas
+        (_unknown_4, _unknown_5, _unknown_6, sprite_count) = struct.unpack_from("<BBBB", data_with_header, 4)
+        if sprite_count == 0:
+            raise Exception(f"no sprites found")
+        sprite_header_offsets = [
+                struct.unpack_from("<I", data_with_header, 8 + sprite_index*4)[0]
+                for sprite_index in range(sprite_count)
         ]
+        data = data_with_header[8:]
+        for sprite_index in range(sprite_count):
+            sprite_header_offset = sprite_header_offsets[sprite_index]
+            (tile_set_offset, palettes_offset, _unknown_14, object_list_offset, _unknown_1c) = struct.unpack_from("<IIIII", data, sprite_header_offset)
 
-        object_list = []
-        while True:
-            (tile_index, x, y, flags) = struct.unpack_from("<BbbH", data, object_list_offset + 8+4)
-            if tile_index == 0xff:
-                break
-            object_list.append(ObjectListEntry(
-                tile_index=tile_index,
-                x=x,
-                y=y,
-                size_flag = (flags >> 0) & 3,
-                h_flip = (flags & (1<<6)) != 0,
-                v_flip = (flags & (1<<7)) != 0,
-                shape_flag = (flags >> 8) & 3,
-                palette_index = (flags >> 12),
-            ))
-            object_list_offset += 5
+            (palettes_size,) = struct.unpack_from("<I", data, palettes_offset)
+            PALETTE_SIZE = 16*2
+            palette_datas = chunk(
+                    data[palettes_offset+4:palettes_offset+4+palettes_size],
+                    PALETTE_SIZE)
 
-        sprite = PIL.Image.new("RGBA", (256, 256))
-        for object_list_entry in object_list:
-            (object_width, object_height) = object_list_entry.size
-            tile_index = object_list_entry.tile_index
-            for yi in range(0, object_height, TILE_HEIGHT):
-                for xi in range(0, object_width, TILE_WIDTH):
-                    sprite.alpha_composite(tile_sets[object_list_entry.palette_index], (object_list_entry.x + xi + 128, object_list_entry.y + yi + 128), (0, tile_index * TILE_HEIGHT, TILE_WIDTH, tile_index * TILE_HEIGHT + TILE_HEIGHT))
-                    tile_index += 1
-        return sprite
+            (tile_set_size,) = struct.unpack_from("<I", data, tile_set_offset)
+            print(f"tile_set {tile_set_offset:#x}..{tile_set_offset+tile_set_size:#x}")
+            tile_set_data = data[tile_set_offset+4:tile_set_offset+4+tile_set_size]
+
+            tile_sets = [
+                make_sprite_tile_set_image(tile_set_data=tile_set_data, palette_data=palette_data)
+                for palette_data in palette_datas
+            ]
+
+            object_list = []
+            while True:
+                (tile_index, x, y, flags) = struct.unpack_from("<BbbH", data, object_list_offset + 4)
+                if tile_index == 0xff:
+                    break
+                object_list.append(ObjectListEntry(
+                    tile_index=tile_index,
+                    x=x,
+                    y=y,
+                    size_flag = (flags >> 0) & 3,
+                    h_flip = (flags & (1<<6)) != 0,
+                    v_flip = (flags & (1<<7)) != 0,
+                    shape_flag = (flags >> 8) & 3,
+                    palette_index = (flags >> 12),
+                ))
+                object_list_offset += 5
+
+            sprite = PIL.Image.new("RGBA", (256, 256))
+            for object_list_entry in object_list:
+                (object_width, object_height) = object_list_entry.size
+                tile_index = object_list_entry.tile_index
+                for yi in range(0, object_height, TILE_HEIGHT):
+                    for xi in range(0, object_width, TILE_WIDTH):
+                        sprite.alpha_composite(tile_sets[object_list_entry.palette_index], (object_list_entry.x + xi + 128, object_list_entry.y + yi + 128), (0, tile_index * TILE_HEIGHT, TILE_WIDTH, tile_index * TILE_HEIGHT + TILE_HEIGHT))
+                        tile_index += 1
+            # @@@ todo: compose sprites?
+            return sprite
 
 def make_sprite_tile_set_image(tile_set_data: bytes, palette_data: bytes):
     with tempfile.TemporaryDirectory() as temporary_directory:
