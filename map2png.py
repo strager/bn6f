@@ -139,8 +139,11 @@ def create_image_for_map(tile_set, layer_map_datas: typing.Sequence[bytes], map_
             tile_y = tile_index * TILE_WIDTH // tile_set_rgba.width * TILE_HEIGHT
             if tile_y > tile_set_rgba.height:
                 print(f"!!! {code:#x}")
-            # TODO(strager): h-flip, v-flip
-            map.alpha_composite(tile_set_rgba, (x, y), (tile_x, tile_y, tile_x + TILE_WIDTH, tile_y + TILE_HEIGHT))
+            tile_image = tile_set_rgba.crop((tile_x, tile_y, tile_x + TILE_WIDTH, tile_y + TILE_HEIGHT))
+            if code & 0x0400:
+                tile_image = tile_image.transpose(PIL.Image.FLIP_LEFT_RIGHT)
+            # TODO(strager): v-flip
+            map.alpha_composite(tile_image, (x, y))
             x += TILE_WIDTH
             if x >= map.width:
                 x = 0
