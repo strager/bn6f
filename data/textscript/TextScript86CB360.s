@@ -10,8 +10,18 @@ TextScript86CB360::
 	def_text_script TextScript86CB360_unk2
 	.string "Central Town@"
 
-	def_text_script TextScript86CB360_unk3
+strager_test::
+//	def_text_script TextScript86CB360_unk3
+	.equ __text_script_relative_offset_temp, . - __text_script_rel_pointers_base
+	.data __subsection_id - 1
+strager_test2::
+	.hword __text_script_relative_offset_temp
+	/* switch back to the text script subsection */
+	.data __subsection_id
+	/* set text script id info */
+	__set_text_script_id NULL
 	.string "_Lan's House@"
+
 
 	def_text_script TextScript86CB360_unk4
 	.string "__Lan's Room@"

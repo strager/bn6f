@@ -2672,21 +2672,21 @@ loc_8004706:
 off_8004718: .word eActiveOverworldNPCObjectsBitfield
 off_800471C: .word eOverworldNPCObjects
 off_8004720: .word byte_2006530
-off_8004724: .word ho_80A4984+1
-	.word sub_80A4A98+1
-	.word sub_80A4BDC+1
-	.word sub_80A51C4+1
-	.word sub_80A5428+1
-	.word sub_80A54F0+1
-	.word sub_80A57AC+1
-	.word sub_80A5AD4+1
-	.word sub_80A6A16+1
-	.word sub_80A6E98+1
-	.word sub_80A72B4+1
-	.word sub_80A77A8+1
-	.word sub_80A781C+1
-	.word sub_80A78B8+1
-	.word sub_80A7C84+1
+off_8004724: .word ho_80A4984+1 // Index=0
+	.word sub_80A4A98+1 // Index=1
+	.word sub_80A4BDC+1 // Index=2
+	.word sub_80A51C4+1 // Index=3
+	.word sub_80A5428+1 // Index=4
+	.word sub_80A54F0+1 // Index=5
+	.word sub_80A57AC+1 // Index=6
+	.word sub_80A5AD4+1 // Index=7
+	.word sub_80A6A16+1 // Index=8
+	.word sub_80A6E98+1 // Index=9
+	.word sub_80A72B4+1 // Index=10
+	.word sub_80A77A8+1 // Index=11
+	.word sub_80A781C+1 // Index=12
+	.word sub_80A78B8+1 // Index=13
+	.word sub_80A7C84+1 // Index=14
 	.word sub_80A7D90+1
 	.word sub_80A8208+1
 	.word sub_80A8394+1
@@ -2897,7 +2897,7 @@ loc_80048F2:
 	beq loc_8004916
 loc_800490A:
 	ldr r0, [sp]
-	ldrb r1, [r5,#1]
+	ldrb r1, [r5,#oOverworldMapObject_Index]
 	lsl r1, r1, #2
 	ldr r0, [r0,r1]
 	mov lr, pc

@@ -32,6 +32,7 @@ CentralTown_EnterMapGroup:
 	bl uncompSprite_8002906
 	bl chatbox_uncompMapTextArchives_803FD08 // () -> int
 	bl CentralTown_SpawnMapObjectsForMap
+	// this looks like the bg tileset animation pointer table.
 	ldr r0, off_804E690 // =off_804E9CC 
 	ldrb r1, [r5,#oGameState_MapNumber]
 	lsl r1, r1, #2

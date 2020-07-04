@@ -14,6 +14,7 @@ renderTextGfx_8045F8C:
 	push {r1}
 	mov r1, r9
 	push {r1}
+	// here
 	ldr r1, off_8045FB8 // =sub_3006B94+1 
 	mov lr, pc
 	bx r1

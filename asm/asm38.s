@@ -2202,6 +2202,7 @@ sub_3006B94:
 loc_3006BBA:
 	cmp r3, #0
 	beq loc_3006BF6
+        // read text script text?
 	ldrb r1, [r0]
 	cmp r1, #0xe5
 	blt loc_3006BD2

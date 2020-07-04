@@ -1,0 +1,65 @@
+LittleEndian();
+
+struct FileHeader {
+    uint compressed_size_times_256;
+    ubyte unknown_4;
+    ubyte unknown_5;
+    ubyte unknown_6;
+    ubyte sprite_count;
+} file_header;
+
+struct Unknown14Entry {
+    ubyte unknown_0;
+    ubyte unknown_1;
+};
+
+struct Unknown18Entry {
+    ubyte tile_index;
+    ubyte unknown_1;
+    ubyte unknown_2;
+    ubyte unknown_3;
+    ubyte unknown_4;
+};
+
+local int sprite_header_pos = FTell();
+uint sprite_offsets[file_header.sprite_count];
+
+struct SpriteHeader {
+    uint tile_set_offset <format=hex>;
+    uint palette_offset <format=hex>;
+    uint unknown_14_offset <format=hex>;
+    uint unknown_18_offset <format=hex>;
+    uint unknown_1c <format=hex>;
+};
+local uint i;
+for (i = 0; i < file_header.sprite_count; ++i) {
+    FSeek(sprite_offsets[i] + sprite_header_pos);
+    SpriteHeader sprite_header;
+    
+    FSeek(sprite_header.tile_set_offset + sprite_header_pos);
+    struct TileSet {
+        uint tile_set_size;
+        ubyte tile_set[tile_set_size];
+    } tile_set;
+    
+    FSeek(sprite_header.palette_offset + sprite_header_pos);
+    struct Palette {
+        uint palette_size;
+        ushort palette[palette_size/2];
+    } palette;
+    
+    FSeek(sprite_header.unknown_14_offset + sprite_header_pos);
+    struct Unknown14 {
+        uint unknown_14_entry_count;
+        Unknown14Entry unknown_14_entries[unknown_14_entry_count];
+    } unknown_14;
+
+    FSeek(sprite_header.unknown_18_offset + sprite_header_pos);
+    struct Unknown18 {
+        uint unknown_18_header;
+        do {
+            Unknown18Entry unknown_18_entry;
+        } while (unknown_18_entry.tile_index != 0xff);
+    } unknown_18;
+}
+

@@ -8,6 +8,8 @@
 	u32 Unk_4, \unk_4 // loc=0x4
 	u8 Palette, \palette // loc=0x8
 	u8 Unk_9, \unk_9 // loc=0x9
+	// MMBN3: bit index into event array (0x02000030), or -1 (0xffff) if
+	// object should always show. event-bit-test routine at 0x08021d44.
 	u16 Unk_A, \unk_a // loc=0xa
 	u16 Unk_C, \unk_c // loc=0xc
 	u16 Unk_E, \unk_e // loc=0xe

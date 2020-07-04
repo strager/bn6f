@@ -31001,10 +31001,12 @@ off_811F088: .word byte_200D220
 	thumb_func_end sub_811F050
 
 	thumb_local_start
+	// here
 sub_811F08C:
 	push {r4-r7,lr}
-	bl sub_811F290
+	bl sub_811F290 // this function determines which entry of TextScript86CB360 to show.
 	mov r1, r0
+	// !!!
 	ldr r0, off_811F0C0 // =TextScript86CB360
 	ldr r2, off_811F0B4 // =byte_200C620
 	mov r3, #0
@@ -31232,6 +31234,7 @@ byte_811F27C: .byte 0xBC, 0xE2, 0x0, 0x0, 0x76, 0x40, 0xA0, 0x80, 0xC4, 0xE2
 	.byte 0x0, 0x0, 0x76, 0x40, 0xC0, 0x80, 0xCC, 0xE2, 0x0, 0x0
 	thumb_func_end sub_811F24C
 
+// this function determines which entry of TextScript86CB360 to show.
 	thumb_func_start sub_811F290
 sub_811F290:
 	push {lr}
@@ -31281,6 +31284,7 @@ off_811F2B0: .word byte_811F328
 	.word byte_811F4D8
 	.word byte_811F4E8
 	.word byte_811F4F8
+	// mappings from map to index in TextScript86CB360.
 byte_811F328: .byte 0x0, 0x1, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 	.byte 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 byte_811F338: .byte 0x2, 0x3, 0x4, 0x5, 0x6, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF

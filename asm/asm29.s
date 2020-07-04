@@ -4287,16 +4287,16 @@ off_80A77A4: .word byte_2000EC0
 sub_80A77A8:
 	push {lr}
 	ldr r0, off_80A77B8 // =off_80A77BC 
-	ldrb r1, [r5,#8]
+	ldrb r1, [r5,#oOverworldMapObject_Unk_08]
 	ldr r0, [r0,r1]
 	mov lr, pc
 	bx r0
 	pop {pc}
 	.balign 4, 0x00
 off_80A77B8: .word off_80A77BC
-off_80A77BC: .word sub_80A77C8+1
-	.word sub_80A77FC+1
-	.word sub_80A7812+1
+off_80A77BC: .word sub_80A77C8+1 // 0
+	.word sub_80A77FC+1 // 1
+	.word sub_80A7812+1 // 2
 	thumb_func_end sub_80A77A8
 
 	thumb_local_start
