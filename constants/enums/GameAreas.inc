@@ -1,4 +1,5 @@
 /*
+bingo?
 To get to the list of all NPC in the area:
 For 0x00 maps:
 [ [ 0x08034638 + (area * 4) ] + (subarea*4) ]

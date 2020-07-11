@@ -2807,6 +2807,8 @@ NPCCommand_jump_if_screen_fade_active:
 	pop {pc}
 	thumb_func_end NPCCommand_jump_if_screen_fade_active
 
+	// inputs:
+	// r0: e.g. dword_804FA1C
 	thumb_local_start
 sub_809F506:
 	push {lr}

@@ -2467,6 +2467,14 @@ off_80045B8: .word byte_203F750
 off_80045BC: .word npc_809E570+1
 	thumb_func_end dead_800459A
 
+	// inputs:
+        // r0: put in oOverworldNPCObject_Index. should always be 0.
+        // r1: x
+        // r2: y
+        // r3: z
+        // r4: put in oOverworldNPCObject_MovementSpeed_MovementTimer_Undetected_06_Unk_07.
+        // outputs:
+        // r5: pointer to OverworldNPCObject, or 0 if can't spawn
 	thumb_func_start SpawnOverworldNPCObject
 SpawnOverworldNPCObject:
 	push {r0-r4,lr}
@@ -2496,7 +2504,9 @@ loc_80045DC:
 	mov r0, #(OBJECT_FLAG_ACTIVE | OBJECT_FLAG_STOP_SPRITE_UPDATE)
 	strb r0, [r5]
 	pop {r0-r4}
-	strb r0, [r5,#oOverworldNPCObject_Index]
+        // who's reading this?
+        // r5 is 0x020057b0, for example
+	strb r0, [r5,#oOverworldNPCObject_Index] // Always 0.
 	str r1, [r5,#oOverworldNPCObject_X]
 	str r2, [r5,#oOverworldNPCObject_Y]
 	str r3, [r5,#oOverworldNPCObject_Z]
@@ -2558,7 +2568,7 @@ loc_800463E:
 	beq loc_8004662
 loc_8004656:
 	ldr r0, [sp]
-	ldrb r1, [r5,#1]
+	ldrb r1, [r5,#oOverworldNPCObject_Index]
 	lsl r1, r1, #2
 	// jumptable has only one entry
 	ldr r0, [r0,r1]

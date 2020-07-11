@@ -20450,7 +20450,7 @@ loc_80308FA:
 	add sp, sp, #8
 	pop {r4-r7,pc}
 	.balign 4, 0
-EnterMap_RealWorldMapGroupJumptable:
+EnterMap_RealWorldMapGroupJumptable::
 	.word ACDCTown_EnterMapGroup+1
 	.word CentralTown_EnterMapGroup+1
 	.word CyberAcademy_EnterMapGroup+1
@@ -20467,7 +20467,7 @@ RealWorldMapGroupLoadGFXAnimsJumptable:
 	.word SkyTown_LoadGFXAnims+1
 	.word ExpoSite_LoadGFXAnims+1
 
-EnterMap_InternetMapGroupJumptable:
+EnterMap_InternetMapGroupJumptable::
 	.word RobotControlComp_EnterMapGroup+1
 	.word AquariumComp_EnterMapGroup+1
 	.word JudgeTreeComp_EnterMapGroup+1
@@ -20582,6 +20582,10 @@ LoadGFXAnimsForMapGroup:
 	.pool
 	thumb_func_end LoadGFXAnimsForMapGroup
 
+	// inputs:
+	// r0
+	// r10
+	// ...
 	thumb_func_start npc_freeAllObjectsThenSpawnObjectsFromList
 npc_freeAllObjectsThenSpawnObjectsFromList:
 	push {r4-r6,lr}
@@ -20597,7 +20601,7 @@ npc_freeAllObjectsThenSpawnObjectsFromList:
 	pop {r0}
 	mov r1, #0
 .loop
-	ldr r2, [r0]
+	ldr r2, [r0] // this reads e.g. off_804F9D8 (dword_804FA1C)
 	cmp r2, #0xff
 	beq .done
 	bl npc_spawnObjectThenSetUnk10_TempAnimScriptPtr_8030a8c
@@ -20608,6 +20612,11 @@ npc_freeAllObjectsThenSpawnObjectsFromList:
 	pop {r4-r6,pc}
 	thumb_func_end npc_freeAllObjectsThenSpawnObjectsFromList
 
+	// inputs:
+	// r1: ???
+	// r2: pointer to spawn data
+	// outputs:
+        // r5: pointer to OverworldNPCObject, or 0 if can't spawn
 	thumb_local_start
 npc_spawnObjectThenSetUnk10_TempAnimScriptPtr_8030a8c:
 	push {lr}
@@ -20618,6 +20627,7 @@ npc_spawnObjectThenSetUnk10_TempAnimScriptPtr_8030a8c:
 	pop {r0-r2}
 	tst r5, r5
 	beq .objectSpawnFailed
+	// r5 is 0x020057b0, for example
 	strb r1, [r5,#oOverworldNPCObject_Unk_10]
 	str r2, [r5,#oOverworldNPCObject_UnkFlags_60] // this is actually temp storage for the animation script pointer
 .objectSpawnFailed

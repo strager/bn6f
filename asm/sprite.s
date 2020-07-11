@@ -437,6 +437,7 @@ uncompSprite_8002906:
 	push {r1,r2,r4-r6}
 	// src
 	mov r0, r8
+	// sprite 7,17 (robo doggo) is decompressed to 0x02037800 in Central Town
 	bl SWI_LZ77UnCompReadNormalWrite8bit // (void *src, void *dest) -> void
 	pop {r1,r2,r4-r6}
 	add r1, r1, r2

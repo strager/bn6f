@@ -976,6 +976,7 @@ off_8032BA0:: .word byte_8572DEC
 off_8032BE8:: .word dword_858F110
 	.word off_8592304
 	.word dword_85924A8
+
 	.word dword_858F110
 	.word off_8592304
 	.word dword_8594D80

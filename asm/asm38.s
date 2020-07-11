@@ -719,14 +719,20 @@ dword_3006100: .word 0x6010000
 off_3006104: .word QueueEightWordAlignedGFXTransfer+1 // (void *queuedSource, void *queuedDest, int queuedSize) -> void
 	thumb_func_end sub_3006028
 
+        // inputs
+        // r5 - pointer, e.g. 0x02005928
 	thumb_local_start
 sub_3006108:
+        // for example, r0 = 0x02037880 # beginning of doggo[0].tileset. but r0 is clobbered, so whatever. xD
+        // for example, r7 = 0x02037880 # beginning of doggo[0].tileset. but it's also clobbered.
 	push {lr}
 	ldr r0, [r5,#0x1c]
-	ldr r0, [r0,#4]
-	add r0, #4
+        // r0 is now 0x0203781c, for example, which is &doggo[0].sprite_header
+	ldr r0, [r0,#4] // .palette_offset
+	add r0, #4 // ignore palette size.
 	ldr r1, [r5,#0x18]
-	add r0, r0, r1
+        // r1 is now 0x02037808, for example, which is &doggo.header
+	add r0, r0, r1 // .palette ptr
 	ldrb r1, [r5,#4]
 	ldrb r2, [r5,#5]
 	add r1, r1, r2 // r1 = r1 + r2
@@ -757,12 +763,15 @@ loc_3006140:
 	bge loc_3006196
 	ldr r5, off_30061A4 // =byte_3001550
 	mov r1, #0
+
+        // hypothesis: this code determines: is this obj's palette already loaded?
 loc_300614E:
 	cmp r1, r4
 	bge loc_300616A
 	mov r6, #0x1c
 loc_3006154:
 	ldr r2, [r5,r6]
+        // this reads an obj's palette.
 	ldr r3, [r0,r6]
 	cmp r2, r3
 	bne loc_3006164
@@ -789,6 +798,7 @@ loc_300616A:
 loc_3006182:
 	mov r6, #0x1c
 loc_3006184:
+        // copy palette to iwram?
 	ldr r2, [r0,r6]
 	str r2, [r5,r6]
 	sub r6, #4

@@ -1334,7 +1334,7 @@ off_803461C: .word off_804D0BC
 	.word off_805E198
 	.word off_806066C
 	.word off_8062F90
-NPCList_maps00: .word npc_map00_ACDC_804D0B4
+NPCList_maps00:: .word npc_map00_ACDC_804D0B4
 	.word npc_map00_804E954
 	.word off_8052DE0
 	.word off_8059D70
@@ -1443,7 +1443,7 @@ UnkInternetMapGroupJumptable_8034784: .word RobotControlComp_UnkFunction_806651c
 	.word SkyACDCArea_UnkFunction_807aaac+1
 	.word Undernet_UnkFunction_807cfcc+1
 	.word GraveyardImmortalArea_UnkFunction_807ee68+1
-NPCList_maps80: .word off_80665B4
+NPCList_maps80:: .word off_80665B4
 	.word off_8067DE0
 	.word off_8069310
 	.word off_806A278
@@ -2316,6 +2316,7 @@ npc_spawnOverworldNPCObjectsForMap:
 	ldrb r1, [r3,#oGameState_MapNumber]
 	cmp r0, #INTERNET_MAP_GROUP_START
 	bge .internetMapGroup
+        // here
 	ldr r2, =NPCList_maps00
 	b .realWorldMapGroup
 .internetMapGroup

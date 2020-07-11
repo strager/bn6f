@@ -54,6 +54,7 @@ strager_test2::
 	.string "__Foyer Hall@"
 
 	def_text_script TextScript86CB360_unk14
+strager_test_3::
 	.string "Teachers' Rm@"
 
 	def_text_script TextScript86CB360_unk15
