@@ -20655,13 +20655,13 @@ decompressCoordEventData_8030aa4: // JP 0x8031A60
 	mov r3, r9
 	mov r4, r12
 	push {r2-r4}
-	cmp r0, #0x80
+	cmp r0, #INTERNET_MAP_GROUP_START
 	bge loc_8030AB6
 	ldr r3, off_8030B00 // =pt_8033530 
 	b loc_8030ABA
 loc_8030AB6:
 	ldr r3, off_8030B04 // =pt_803354C 
-	sub r0, #0x80
+	sub r0, #INTERNET_MAP_GROUP_START
 loc_8030ABA:
 	lsl r0, r0, #2 // map group
 	add r3, r3, r0
@@ -20677,18 +20677,25 @@ loc_8030ABA:
 	bl SWI_LZ77UnCompReadNormalWrite8bit // (void *src, void *dest) -> void
 	pop {r6}
 	ldr r7, off_8030B08 // =unk_2027A00 
-	ldr r0, [r6]
+
+	// read header in front of dataz (e.g. byte_861C770)
+	ldr r0, [r6,#0] // Unk_00
 	add r0, r0, r7
 	bl sub_8030B0C
-	ldr r0, [r6,#4]
+
+	ldr r0, [r6,#4] // Unk_04
 	add r0, r0, r7
 	bl sub_8031600
-	ldr r0, [r6,#8]
+
+	// layer priorities table
+	ldr r0, [r6,#8] // Unk_08
 	add r0, r0, r7
 	bl sub_803189C
-	ldr r0, [r6,#0xc]
+
+	ldr r0, [r6,#0xc] // Unk_0C
 	add r0, r0, r7
 	bl sub_8031A68
+
 	pop {r2-r4}
 	mov r8, r2
 	mov r9, r3
@@ -20706,7 +20713,7 @@ sub_8030B0C:
 	ldr r1, [r0]
 	strh r1, [r5,#0x4] // (word_2011D14 - 0x2011d10)
 	add r0, #4
-	str r0, [r5]
+	str r0, [r5,#0]
 	mov r0, #0xfe
 	strb r0, [r5,#0x8] // (byte_2011D18 - 0x2011d10)
 	strb r0, [r5,#0x9] // (byte_2011D19 - 0x2011d10)
@@ -20715,13 +20722,17 @@ sub_8030B0C:
 
 	thumb_local_start
 sub_8030B1E:
+	// r5 is dword_2013940, for example
 	push {lr}
 	ldrh r2, [r5,#oUnk_Ex2011a20_Unk_04]
 	cmp r2, #0
-	beq .loc_8030B66
+	beq .notFound
 	mov r2, #0
-	ldrh r3, [r5,#oUnk_Ex2011a20_Unk_04]
-	ldr r6, [r5,#oUnk_Ex2011a20_UnkPtr_00]
+	ldrh r3, [r5,#oUnk_Ex2011a20_Unk_04] // number of things in the array
+	ldr r6, [r5,#oUnk_Ex2011a20_UnkPtr_00] // pointer to array
+	// r6 is 0x02027a04, for example
+	// r6 is 0x02027ca4, for example (where r5 is 0x02013940, for example)
+	// r6 is 0x02027d40, for example
 	mov r8, r6
 
 // this is a binary search
@@ -20754,7 +20765,7 @@ sub_8030B1E:
 .loc_8030B4C:
 	.align 1, 0
 	cmp r1, r7
-	bne .loc_8030B66
+	bne .notFound
 	ldr r2, [r5]
 .loc_8030B52:
 	.align 1, 0
@@ -20770,7 +20781,7 @@ sub_8030B1E:
 	add r6, #4
 	mov r2, r6
 	pop {pc}
-.loc_8030B66:
+.notFound
 	.align 1, 0
 	mov r2, #NULL
 	pop {pc}
@@ -22324,32 +22335,47 @@ dword_8031690:
 	.word NULL // 0x19
 	thumb_func_end checkZCoordModifiers_8031612
 
+	// convert object x,y to tile number???
 	thumb_local_start
 sub_80316F8:
 	mov r2, #oOWObjectCoords_X
 	ldrsh r1, [r0,r2]
 	mov r2, #oOWObjectCoords_Y
 	ldrsh r2, [r0,r2]
+	// r1,r2 is for example:
+	// * 0x004f, -0x68
+	// * 0x0044, -0x68
+	// * -0x001a, -0x48
+
+	// :: r1 = x >> 3
+	// :: r2 = y >> 3
 	asr r1, r1, #3
 	asr r2, r2, #3
 
 	// at a glance, unk07 and unk06 seem to be always 0xfe
-	ldrb r3, [r5,#oUnk_Ex2011a20_Unk_07]
+	// :: r3 = 0xfe >> 1
+	ldrb r3, [r5,#oUnk_Ex2011a20_Unk_07] // max Y
 	lsr r3, r3, #1
 
+	// :: r2 = r2 + r3
 	// y/8 + unk07/2
 	add r2, r2, r3
 
-	ldrb r3, [r5,#oUnk_Ex2011a20_Unk_06]	
+	// :: r3 = 0xfe >> 1
+	ldrb r3, [r5,#oUnk_Ex2011a20_Unk_06]	 // max X
 	lsr r3, r3, #1
 
+	// :: r1 = r1 + r3
 	// x/8 + unk06/2
 	add r1, r1, r3
 
+	// :: r3 = r3 << 1
 	lsl r3, r3, #1
+	// :: r2 = r2 * r3
 	mul r2, r3
 
 	// r2 = unk06 * (y/8 + unk07/2) + x/8 + unk06/2
+	// :: r2 = r2 + r1
 	add r2, r2, r1
 	strh r2, [r5,#oUnk_Ex2011a20_Unk_08]
 
@@ -22588,16 +22614,21 @@ sub_8031874:
 	pop {pc}
 	thumb_func_end sub_8031874
 
+	// initialize dword_2013940 with pointers to trigger
+	// layer table and such.
+	//
+	// Inputs:
+	// r0: pointer to trigger layer table header (size)
 	thumb_local_start
 sub_803189C:
 	ldr r5, off_8031994 // =dword_2013940 
-	ldr r1, [r0]
-	strh r1, [r5,#0x4] // (word_2013944 - 0x2013940)
-	add r0, #4
-	str r0, [r5]
+	ldr r1, [r0] // read header (size)
+	strh r1, [r5,#oUnk_Ex2011a20_Unk_04] // (word_2013944 - 0x2013940)
+	add r0, #4 // skip header
+	str r0, [r5,#oUnk_Ex2011a20_UnkPtr_00]
 	mov r0, #0xfe
-	strb r0, [r5,#0x6] // (byte_2013946 - 0x2013940)
-	strb r0, [r5,#0x7] // (byte_2013947 - 0x2013940)
+	strb r0, [r5,#oUnk_Ex2011a20_Unk_06] // (byte_2013946 - 0x2013940)
+	strb r0, [r5,#oUnk_Ex2011a20_Unk_07] // (byte_2013947 - 0x2013940)
 	mov pc, lr
 	.byte 0, 0
 	thumb_func_end sub_803189C
@@ -22613,29 +22644,44 @@ checkLayerPriority_80318b0:
 	ldr r5, off_8031994 // =dword_2013940 
 	ldr r2, off_8031910 // =dword_200F3D0 
 	str r0, [r2]
+
 	bl sub_80316F8
+//080318c4
+	// Lan in corner:
+	// r1 = 758f, 7e78, 71a3
+	//
+	// Lan right of mom:
+	// r1 = 758f, 71a4, 71a3
+
+	// sub_8030B1E finds the entry in the UnkS2 table
+	// where unk_00 == r1.
+	// r1 is 0x7e78, for example
 	bl sub_8030B1E
+	// r2 is 0x02027d10, for example
 	cmp r2, #0
 	beq .returnLayer2
-.loc_80318CC: .align 1, 0
-	ldrh r4, [r2]
+.loc_80318CC:
+	ldrh r4, [r2,#0] // UnkS2.unk_00
 	cmp r1, r4
 	bne .returnLayer2
-	ldrh r7, [r2,#2]
+	ldrh r7, [r2,#2] // UnkS2.unk_02
+	// r7 is 0x0090, for example
+	// r5 is 0x02013940, for example
 	ldr r4, [r5]
+	// r4 is 0x02027ca4, for example
 	add r7, r7, r4
 	mov r4, #0
 	ldrsb r4, [r7,r4]
 	mov r6, #0xa
 	ldrsh r6, [r0,r6]
 	cmp r6, r4
-	blt .loc_80318EE
+	blt .next
 	ldrb r3, [r7,#2]
 	add r4, r4, r3
 	cmp r6, r4
-	bgt .loc_80318EE
+	bgt .next
 	b .loc_80318F2
-.loc_80318EE:
+.next
 	add r2, #4
 	b .loc_80318CC
 .loc_80318F2:

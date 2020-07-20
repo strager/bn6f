@@ -1563,7 +1563,7 @@ off_803350C:: .word sub_8030628+1
 	.word sub_8030808+1
 	.word sub_803086C+1
 pt_8033530:: .word off_80335A8
-	.word off_80335B4
+	.word off_80335B4 // Central Town
 	.word off_80335C8
 	.word off_80335F4
 	.word off_8033608
@@ -1596,7 +1596,7 @@ off_80335A8:: .word byte_8619BD0
 	.word byte_861AD84
 	.word byte_861B31C
 off_80335B4:: .word byte_861B338
-	.word byte_861C770
+	.word byte_861C770 // Lan's House
 	.word byte_861CC50
 	.word byte_861CEE8
 	.word byte_861D05C
