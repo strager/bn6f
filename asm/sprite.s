@@ -109,8 +109,10 @@ sprite_initialize:
 	str r0, [r5,#oObjectSprite_Unk_34]
 	mvn r0, r0
 	str r0, [r5,#oObjectSprite_Unk_28]
-	mov r0, #8
+
+	mov r0, #(2 << 10) >> 8 // priority 2
 	strb r0, [r5,#oObjectSprite_Unk_15]
+
 	mov r0, #8
 	strh r0, [r5,#oObjectSprite_Unk_16]
 	mov pc, lr
@@ -1099,11 +1101,14 @@ sprite_setFinalPalette:
 	lsr r3, r3, #4
 	lsl r3, r3, #4
 	add r3, r3, r5
+
+	// set sprite's palette index to r1>>4
 	ldrb r0, [r3,#oObjectSprite_Unk_15]
 	mov r2, #0xf0
 	bic r0, r2
 	orr r0, r1
 	strb r0, [r3,#oObjectSprite_Unk_15]
+
 	mov pc, lr
 	thumb_func_end sprite_forceWhitePalette
 
@@ -1125,10 +1130,13 @@ sprite_clearFinalPalette:
 	lsr r3, r3, #4
 	lsl r3, r3, #4
 	add r3, r3, r5
+
+	// set sprite's palette index to 0
 	ldrb r0, [r3,#oObjectSprite_Unk_15]
 	mov r1, #0xf0
 	bic r0, r1
 	strb r0, [r3,#oObjectSprite_Unk_15]
+
 	mov pc, lr
 	thumb_func_end sprite_clearFinalPalette
 
@@ -1162,18 +1170,33 @@ sub_8002E04:
 	mov pc, lr
 	thumb_func_end sub_8002E04
 
+	// Set a sprite's BG priority.
+	//
+	// Inputs:
+	// r0: The BG priority (0-3)
+	// r5
+	//
+	// Clobbers:
+	// r0-r3
+	//
+	// At idle in Lan's house, called by:
+	// 0x0809d40f
+	// 0x0809e695
 	thumb_func_start sub_8002E14
 sub_8002E14:
 	ldrb r3, [r5,#oObjectHeader_TypeAndSpriteOffset]
 	lsr r3, r3, #4
 	lsl r3, r3, #4
 	add r3, r3, r5
-	mov r2, #0xc
+
+	// set the sprite's priority to r0
+	mov r2, #(3 << 10) >> 8
 	ldrb r1, [r3,#oObjectSprite_Unk_15]
 	bic r1, r2
-	lsl r0, r0, #2
+	lsl r0, r0, #10 - 8
 	orr r1, r0
 	strb r1, [r3,#oObjectSprite_Unk_15]
+
 	mov pc, lr
 	thumb_func_end sub_8002E14
 

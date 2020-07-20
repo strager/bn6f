@@ -316,6 +316,7 @@ loc_809D3FC:
 	mov r0, r5
 	add r0, #oOWPlayerObject_Coords
 	bl applyLayerEffectToOWObject_8035694
+
 loc_809D40A:
 	bl sub_8002E14
 	bl sub_809DFA0

@@ -136,11 +136,12 @@ sub_80A4A90:
 	pop {pc}
 	thumb_func_end sub_80A4A90
 
+        // MMBN3: index=1 means internet security cubes
 	thumb_func_start sub_80A4A98
 sub_80A4A98:
 	push {lr}
 	ldr r0, off_80A4AA8 // =off_80A4AAC 
-	ldrb r1, [r5,#8]
+	ldrb r1, [r5,#oOverworldMapObject_Unk_08]
 	ldr r0, [r0,r1]
 	mov lr, pc
 	bx r0
@@ -156,11 +157,11 @@ off_80A4AAC: .word sub_80A4AB8+1
 sub_80A4AB8:
 	push {lr}
 	mov r0, #4
-	strb r0, [r5,#8]
-	ldrb r0, [r5,#5]
-	str r0, [r5,#0x24]
-	ldrb r0, [r5,#6]
-	str r0, [r5,#0x28]
+	strb r0, [r5,#oBattleObject_CurState]
+	ldrb r0, [r5,#oBattleObject_Param2]
+	str r0, [r5,#oBattleObject_HP] // HP and MaxHP???
+	ldrb r0, [r5,#oBattleObject_Param3]
+	str r0, [r5,#oBattleObject_NameIDAndChip] // ??? Probably not an oBattleObject ...
 	bl sub_80A4ACC
 	pop {pc}
 	thumb_func_end sub_80A4AB8

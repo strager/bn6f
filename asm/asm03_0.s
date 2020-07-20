@@ -17301,6 +17301,7 @@ SetEventFlagFromImmediate:
 SetEventFlag:
 	mov r3, r10
 	ldr r3, [r3,#oToolkit_EventFlagsPtr]
+	// MMBN3W: r3 = 0x02000030
 
 	// get byte offset of flag in memory
 	lsr r1, r0, #3
@@ -18829,6 +18830,12 @@ off_802FE24: .word 0x400
 	thumb_func_end copyObjAttributesToIWRAM_802FE0C
 
 // (u32 a1, u16 a2, int notUsed, int a4) -> void
+        // writes to iObjectAttr3001150. just calls sub_30068E8
+        //
+        // Inputs:
+        // r0: oam_0 and oam_1
+        // r1: oam_2
+        // maybe more
 	thumb_func_start sub_802FE28
 sub_802FE28:
 	push {r4,lr}
@@ -18840,6 +18847,11 @@ sub_802FE28:
 off_802FE34: .word sub_30068E8+1
 	thumb_func_end sub_802FE28
 
+	// call sub_3006920
+	//
+        // inputs:
+        // r0: pointer to some struct STRAGERSTRUCT
+        // r1: ???
 	thumb_local_start
 sub_802FE38:
 	push {r4,lr}
@@ -22590,6 +22602,7 @@ sub_803189C:
 	.byte 0, 0
 	thumb_func_end sub_803189C
 
+	// here we go.
 	thumb_func_start checkLayerPriority_80318b0
 checkLayerPriority_80318b0:
 	push {r4-r7,lr}
@@ -22603,12 +22616,11 @@ checkLayerPriority_80318b0:
 	bl sub_80316F8
 	bl sub_8030B1E
 	cmp r2, #0
-	beq loc_8031904
-	.balign 4, 0
-loc_80318CC: .align 1, 0
+	beq .returnLayer2
+.loc_80318CC: .align 1, 0
 	ldrh r4, [r2]
 	cmp r1, r4
-	bne loc_8031904
+	bne .returnLayer2
 	ldrh r7, [r2,#2]
 	ldr r4, [r5]
 	add r7, r7, r4
@@ -22617,16 +22629,16 @@ loc_80318CC: .align 1, 0
 	mov r6, #0xa
 	ldrsh r6, [r0,r6]
 	cmp r6, r4
-	blt loc_80318EE
+	blt .loc_80318EE
 	ldrb r3, [r7,#2]
 	add r4, r4, r3
 	cmp r6, r4
-	bgt loc_80318EE
-	b loc_80318F2
-loc_80318EE: .align 1, 0
+	bgt .loc_80318EE
+	b .loc_80318F2
+.loc_80318EE:
 	add r2, #4
-	b loc_80318CC
-loc_80318F2: .align 1, 0
+	b .loc_80318CC
+.loc_80318F2:
 	str r7, [r5,#0x14] // (dword_2013954 - 0x2013940)
 	ldrb r6, [r7,#3]
 	lsl r6, r6, #2
@@ -22636,9 +22648,9 @@ loc_80318F2: .align 1, 0
 	mov lr, pc
 	bx r4
 	b loc_8031906
-loc_8031904: .align 1, 0
+.returnLayer2
 	mov r0, #2
-loc_8031906: .align 1, 0
+loc_8031906:
 	pop {r1-r3}
 	mov r8, r1
 	mov r9, r2

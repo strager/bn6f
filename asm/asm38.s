@@ -700,12 +700,15 @@ loc_30060BE: .align 1, 0
 	tst r1, r2
 	bne locret_30060E2
 	bl sub_3006108
+
+	// set sprite's palette index to r0.
 	ldrb r1, [r5,#oObjectSprite_Unk_15]
 	mov r2, #0xf0
 	bic r1, r2
 	lsl r0, r0, #4
 	orr r1, r0
 	strb r1, [r5,#oObjectSprite_Unk_15]
+
 locret_30060E2:
 	pop {r5,pc}
 off_30060E4: .word off_30060E8
@@ -1212,6 +1215,7 @@ loc_3006452:
 	str r1, [sp,#0x14]
 	ldr r0, off_3006590 // =unk_3002400
 	str r0, [sp,#0x10]
+
 	mov r0, #0
 	str r0, [sp,#0xc]
 	ldr r0, [r5,#0x30]
@@ -1275,7 +1279,11 @@ loc_30064B0:
 	bl sub_3006594
 	mov r8, r1
 	mov r9, r0
+
 	mov r3, r6
+
+        // r3 := r3 | 0
+        // All this computation constant-folds to 0...
 	mov r0, #0xc
 	ldrsh r0, [r5,r0]
 	add r0, r8
@@ -1285,6 +1293,9 @@ loc_30064B0:
 	and r0, r4
 	lsl r0, r0, #0x10
 	orr r3, r0
+
+        // r3 := r3 ^ (([r2+3] & 0xf0) << 22)
+        // Some of this computation constant-folds to 0...
 	ldrb r4, [r2,#3]
 	mov r0, #0xf0
 	and r0, r4
@@ -1292,6 +1303,7 @@ loc_30064B0:
 	orr r3, r4
 	lsl r0, r0, #0x16
 	eor r3, r0
+
 	mov r0, #0xe
 	add r0, r0, r7
 	ldrb r0, [r5,r0]
@@ -1299,26 +1311,41 @@ loc_30064B0:
 	mov r4, #0xff
 	and r0, r4
 	orr r3, r0
+
 	ldrb r4, [r2,#4]
 	lsl r1, r4, #0x1c
 	lsr r1, r1, #0x1c
 	lsl r1, r1, #0xe
 	orr r3, r1
-	ldrh r1, [r5,#0x14]
-	ldr r0, [sp,#8]
+
+        // oam_2 := [r5,#0x14]
+	ldrh r1, [r5,#oObjectSprite_Unk_14]
+	ldr r0, [sp,#8] // overwritten palette number?
 	cmp r0, #0xff
 	ble loc_3006528
+
+        // clear the palette number
+        // oam_2 &= ~(0xf000)
 	mov r4, #0xf0
 	lsl r4, r4, #8
 	bic r1, r4
-	ldrb r4, [r0]
+
+        // oam_2 |= [r0.palette_number] << 12
+	ldrb r4, [r0,#0] // palette number
 	lsl r4, r4, #0xc
 	orr r1, r4
+
 loc_3006528:
-	ldrh r0, [r5,#8]
+	// oam_2 |= [r2] + [r5+8]
+	// r5 is 0x02005928, for example (eOverworldNPCObject1_SpriteData_Unk_00)
+	// r2 is 0x083dc2e4, for example -- part of npcSpriteData
+	ldrh r0, [r5,#oObjectSprite_Unk_08]
 	ldrb r4, [r2]
+	// r0 is 0x00000017, for example
+	// r4 is 0 or 2, for example
 	add r4, r4, r0
 	orr r1, r4
+
 	mov r8, r2
 	mov r9, r5
 	mov r0, r3
@@ -1331,12 +1358,12 @@ loc_3006528:
 	add r3, r3, r4
 	lsl r7, r7, #5
 	lsr r3, r7
-	ldr r7, [sp,#0x10]
-	str r0, [r7]
-	strh r1, [r7,#4]
-	strb r2, [r7,#6]
-	strh r3, [r7,#8]
-	add r7, #0xc
+	ldr r7, [sp,#0x10] // r7 := unk_3002400
+	str r0, [r7,#0] // STRAGERSTRUCT.oam_0 and STRAGERSTRUCT.oam_1
+	strh r1, [r7,#4] // STRAGERSTRUCT.oam_2
+	strb r2, [r7,#6] // STRAGERSTRUCT.Unk_06
+	strh r3, [r7,#8] // STRAGERSTRUCT.Unk_08
+	add r7, #0xc // sizeof STRAGERSTRUCT
 	str r7, [sp,#0x10]
 	ldr r7, [sp,#0xc]
 	add r7, #1
@@ -1360,6 +1387,8 @@ loc_3006576:
 	ldr r1, [sp,#0xc]
 	tst r1, r1
 	beq loc_3006582
+        // r0: pointer to some struct STRAGERSTRUCT
+        // r1: ???
 	bl sub_3006920
 loc_3006582:
 	ldr r0, [sp,#4]
@@ -1708,7 +1737,7 @@ copyTo_iObjectAttr3001D70_3006814: // () -> void
 	// s1 *v5: r7
 	ldr r0, off_30068C0 // =iObjectAttr3001D70
 	ldr r2, off_30068C4 // =unk_30025B0
-	ldr r3, off_30068C8 // =unk_3002170
+	ldr r3, off_30068C8 // =unk_3002170 // =(iObjectAttr3001D70 + sizeof(iObjectAttr)*128)
 	ldr r6, off_30068CC // =tupleArr_3002590
 	ldr r7, off_30068D0 // =iObjectAttr3001150
 	mov r12, r7
@@ -1723,7 +1752,7 @@ copyTo_iObjectAttr3001D70_3006814: // () -> void
 // reverse search p0 until a non 0xFF is found or reached buffer end
 .searchTillNo0xFF
 	// --p1
-	sub r4, #1
+	sub r4, #1 // go to .unk_07 of previous entry
 
 	// goto .processNext if (p0 > p1): reached end of buffer
 	cmp r1, r4
@@ -1731,7 +1760,7 @@ copyTo_iObjectAttr3001D70_3006814: // () -> void
 	
 	// u8 v6: r5 = *p1
 	// do while (v6 == 0xFF)
-	ldrb r5, [r4]
+	ldrb r5, [r4] // .unk_07
 	cmp r5, #0xff
 	beq .searchTillNo0xFF
 
@@ -1746,15 +1775,15 @@ copyTo_iObjectAttr3001D70_3006814: // () -> void
 	lsl r5, r5, #3
 	mov r7, r12
 	add r7, r7, r5
-	ldr r5, [r7]
-	str r5, [r0]
-	ldrh r5, [r7,#4]
-	strh r5, [r0,#4]
+	ldr r5, [r7,#0] // .oam_0 and .oam_1
+	str r5, [r0,#0] // .oam_0 and .oam_1
+	ldrh r5, [r7,#4] // .oam_2
+	strh r5, [r0,#4] // .oam_2
 	add r0, #8
 
 	// v6 = v5[v6].unk3
 	// goto .searchTillNo0xFF if v6 == 0xFF
-	ldrb r5, [r7,#7]
+	ldrb r5, [r7,#7] // .unk_07
 	cmp r5, #0xff
 	beq .searchTillNo0xFF
 	
@@ -1769,7 +1798,7 @@ copyTo_iObjectAttr3001D70_3006814: // () -> void
 
 	// *dword_200B1A8 = (v1End - v1) / sizeof(*v1)
 	sub r2, r3, r0
-	lsr r2, r2, #3
+	lsr r2, r2, #3 // sizeof(iObjectAttr)
 	ldr r4, off_30068D4 // =dword_200B1A8
 	str r2, [r4]
 
@@ -1784,8 +1813,8 @@ copyTo_iObjectAttr3001D70_3006814: // () -> void
 	
 	// v1.unk0 = 0xf0
 	// v1.unk1 = 0xc00
-	str r2, [r0]
-	strh r4, [r0,#4]
+	str r2, [r0,#0] // .oam_0 and .oam_1
+	strh r4, [r0,#4] // .oam_2
 
 	add r0, #8
 	b .forRemainingElements
@@ -1799,16 +1828,16 @@ copyTo_iObjectAttr3001D70_3006814: // () -> void
 // for (i=20; i>=0; i--)
 	mov r3, #0x20
 .loop300687A:
-	ldrh r4, [r0]
-	strh r4, [r1,#6]
-	ldrh r4, [r0,#2]
-	strh r4, [r1,#0xe]
-	ldrh r4, [r0,#4]
-	strh r4, [r1,#0x16]
-	ldrh r4, [r0,#6]
-	strh r4, [r1,#0x1e]
-	add r0, #0xc
-	add r1, #0x20 
+	ldrh r4, [r0,#0] // .pa
+	strh r4, [r1,#0*8 + 6] // .rotoscale 0
+	ldrh r4, [r0,#2] // .pb
+	strh r4, [r1,#1*8 + 6] // .rotoscale 1
+	ldrh r4, [r0,#4] // .pc
+	strh r4, [r1,#2*8 + 6] // .rotoscale 2
+	ldrh r4, [r0,#6] // .pd
+	strh r4, [r1,#3*8 + 6] // .rotoscale 3
+	add r0, #0xc // size of rotoscale
+	add r1, #0x20
 	
 	sub r3, #1
 	cmp r3, #0
@@ -1854,6 +1883,14 @@ off_30068E0: .word WordFill+1
 off_30068E4: .word byte_3001950
 	thumb_func_end copyTo_iObjectAttr3001D70_3006814
 
+        // writes to iObjectAttr3001150
+        //
+        // Inputs:
+        // r0: oam_0 and oam_1
+        // r1: oam_2
+        // r2: ???
+        // r3: ???
+        // maybe more
 	thumb_func_start sub_30068E8
 sub_30068E8:
 	push {r4-r7,lr}
@@ -1875,18 +1912,23 @@ sub_30068E8:
 	str r7, [r5]
 	ldrb r7, [r4]
 	strb r6, [r4]
-	lsl r6, r6, #3
+	lsl r6, r6, #3 // size of iObjectAttr3001150 entry
 	ldr r5, off_3006998 // =iObjectAttr3001150
 	add r5, r5, r6
-	str r0, [r5]
-	strh r1, [r5,#4]
-	strb r7, [r5,#7]
+	str r0, [r5,#0] // .oam_0 and .oam_1
+	strh r1, [r5,#4] // .oam_2
+	strb r7, [r5,#7] // .unk_07
 	mov r0, #0xff
-	strb r0, [r5,#6]
+	strb r0, [r5,#6] // .unk_06
 locret_300691E:
 	pop {r4-r7,pc}
 	thumb_func_end sub_30068E8
 
+        // write into iObjectAttr3001150
+        //
+        // inputs:
+        // r0: pointer to some struct STRAGERSTRUCT
+        // r1: ???
 	thumb_func_start sub_3006920
 sub_3006920:
 	push {r4-r7,lr}
@@ -1909,9 +1951,9 @@ loc_300693E:
 	str r1, [sp,#4]
 	mov r3, #8
 	ldrsh r3, [r0,r3]
-	ldrb r2, [r0,#6]
-	ldrh r1, [r0,#4]
-	ldr r0, [r0]
+	ldrb r2, [r0,#6] // STRAGERSTRUCT_Unk_06
+	ldrh r1, [r0,#4] // STRAGERSTRUCT.oam_2
+	ldr r0, [r0,#0] // STRAGERSTRUCT.oam_0 and .oam_1
 	ldr r4, off_300699C // =tupleArr_3002590
 	lsl r7, r2, #3
 	add r4, r4, r7
@@ -1927,14 +1969,16 @@ loc_300693E:
 	mov r9, r7
 	ldrb r7, [r4]
 	strb r6, [r4]
-	lsl r6, r6, #3
-	mov r5, r12
+
+	lsl r6, r6, #3 // size of iObjectAttr3001150 entry
+	mov r5, r12 // r5 := iObjectAttr3001150
 	add r5, r5, r6
-	str r0, [r5]
-	strh r1, [r5,#4]
-	strb r7, [r5,#7]
+	str r0, [r5,#0] // .oam_0, .oam_1
+	strh r1, [r5,#4] // .oam_2
+	strb r7, [r5,#7] // .unk_07
 	mov r0, #0xff
-	strb r0, [r5,#6]
+	strb r0, [r5,#6] // .unk_06
+
 	ldr r0, [sp]
 	ldr r1, [sp,#4]
 	mov r5, r8

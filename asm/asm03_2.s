@@ -120,32 +120,46 @@ sub_8046038:
 	mul r0, r1
 	ldr r6, off_80460B8 // =byte_80460BC
 	add r6, r6, r0
-	ldr r0, dword_80460B4 // =0x40000000 
+
+	ldr r0, dword_80460B4 // =0x40000000 // obj size 16x16 or 32x8 or 8x32
 	mov r12, r0
-	ldr r1, [r6]
+	ldr r1, [r6,#0] // .tile_number_and_maybe_palette
 	str r1, [sp]
 loc_8046062:
+	// r4 is x coordinaate (and maybe flip/rotoscale flags)
+	// r5 is y coordinate (and maybe obj flags)
+
+	// oam_0_and_1 := 0x4000_0000 | (r4<<16) | r5
 	lsl r4, r4, #0x10
 	orr r0, r4
 	orr r0, r5
-	ldrb r2, [r6,#5]
+
+	ldrb r2, [r6,#5] // .bg_priority_and_maybe_palette
+	// oam_2 := r1 | (r2 << 10)
 	lsl r2, r2, #0xa
 	orr r1, r2
-	ldrb r2, [r6,#4]
-	ldrb r3, [r6,#6]
-	bl sub_802FE28 // (u32 a1, u16 a2, int notUsed, int a4) -> void
+
+	ldrb r2, [r6,#4] // .unk_04
+	ldrb r3, [r6,#6] // .unk_06
+	// r0: oam_0 and oam_1
+	// r1: oam_2
+	bl sub_802FE28
 	mov r2, #0x10
 	add r7, r7, r2
 	mov r4, r7
-	mov r0, r12
+	mov r0, r12 // r0 := 0x40000000
+
+	// advance tile number (why 4?)
 	ldr r1, [sp]
 	add r1, #4
 	str r1, [sp]
+
 	mov r2, r8
 	sub r2, #1
 	mov r8, r2
 	cmp r2, #0
 	bgt loc_8046062
+
 	add r5, #0x10
 	ldr r4, [sp,#4]
 	mov r7, r4
@@ -167,6 +181,15 @@ loc_8046062:
 	.balign 4, 0
 dword_80460B4: .word 0x40000000
 off_80460B8: .word byte_80460BC
+
+// sprite stuff?
+// struct { // sizeof == 8
+//   u32 tile_number_and_maybe_palette; // +0
+//   u8 unk_04; // +4
+//   u8 unk_05; // +5
+//   u8 bg_priority_and_maybe_palette; // +6
+//   u8 unk_07; // +7
+// };
 byte_80460BC: .byte 0xB8, 0xE2, 0x0, 0x0, 0x0, 0x0, 0x0, 0xFF, 0xB0, 0xE0, 0x0, 0x0
 	.byte 0x0, 0x3, 0x1, 0xFF, 0xB0, 0xE0, 0x0, 0x0, 0x0, 0x3, 0x1, 0xFF
 	.byte 0x40, 0x83, 0x0, 0x0, 0x0, 0x3, 0x0, 0xFF, 0x40, 0xE3, 0x0, 0x0
@@ -2142,6 +2165,8 @@ sub_804722C:
 	orr r1, r2
 	mov r2, #0
 	mov r3, #1
+        // r0: oam_0 and oam_1
+        // r1: oam_2
 	bl sub_802FE28 // (u32 a1, u16 a2, int notUsed, int a4) -> void
 locret_804725E:
 	pop {r4-r7,pc}

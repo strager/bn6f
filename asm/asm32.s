@@ -31241,9 +31241,9 @@ sub_811F290:
 	mov r2, r10
 	ldr r2, [r2,#oToolkit_GameStatePtr]
 	ldrb r0, [r2,#oGameState_MapGroup]
-	cmp r0, #0x80
+	cmp r0, #INTERNET_MAP_GROUP_START
 	blt loc_811F2A0
-	sub r0, #0x80
+	sub r0, #INTERNET_MAP_GROUP_START
 	add r0, #7
 loc_811F2A0:
 	ldrb r1, [r2,#oGameState_MapNumber]
@@ -31284,6 +31284,7 @@ off_811F2B0: .word byte_811F328
 	.word byte_811F4D8
 	.word byte_811F4E8
 	.word byte_811F4F8
+
 	// mappings from map to index in TextScript86CB360.
 byte_811F328: .byte 0x0, 0x1, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 	.byte 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF

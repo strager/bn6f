@@ -41,7 +41,15 @@ off_3000EA4:: // 0x3000ea4
 	.space 4
 byte_3000EA8:: // 0x3000ea8
 	.space 680
+
 iObjectAttr3001150:: // 0x3001150
+	// struct {
+	//   u16 oam_0; // +0
+	//   u16 oam_1; // +2
+	//   u16 oam_2; // +4
+	//   u8 unk_06; // +6
+	//   u8 unk_07; // +7 if 0xff, break out of loop in copyTo_iObjectAttr3001D70_3006814
+	// };
 	// type: struct{u32 unk0, u16 unk1, u8 unk2, u8 unk3} [128]
 	.space 1024
 byte_3001550:: // 0x3001550
@@ -141,6 +149,10 @@ iPalette3001C80:: // 0x3001c80
 dword_3001D60:: // 0x3001d60
 	.space 16
 iObjectAttr3001D70:: // 0x3001d70
+	// u16 oam_0; // y and shape flags
+	// u16 oam_1; // x and flip flags
+	// u16 oam_2; // tile number, palette, and priority
+	// u16 rotoscale; // +6
 	// type: struct{u32 unk0, u16 unk1, u8 unk2, u8 unk3} [128]
 	.space 128*8
 unk_3002170:: // 0x3002170
@@ -158,6 +170,16 @@ unk_3002300:: // 0x3002300
 unk_300231C:: // 0x300231c
 	.space 228
 unk_3002400:: // 0x3002400
+	// array of STRAGERSTRUCT
+        //
+        // struct STRAGERSTRUCT { // sizeof == 0xc
+        //   u16 oam_0; // +0
+        //   u16 oam_1; // +2
+        //   u16 oam_2; // +4
+        //   u8 Unk_06; // +6
+        //   u16 Unk_08; // +8
+	//   and more
+        // };
 	.space 384
 unk_3002580:: // 0x3002580
 	.space 16

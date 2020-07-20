@@ -138,11 +138,13 @@ loc_809E66E: .align 1, 0
 	ldr r0, [r5,#oOverworldNPCObject_LayerPriorityOverride]
 	tst r0, r0
 	bne loc_809E690
+
 	mov r0, r5
 	add r0, #oOverworldNPCObject_Coords
 	bl applyLayerEffectToOWObject_8035694
 loc_809E690:
 	bl sub_8002E14
+
 	ldr r0, [r5,#oOverworldNPCObject_UnkFlags_60]
 	mov r1, #OW_NPC_UNK_FLAGS_60_0x40
 	tst r0, r1
@@ -997,7 +999,7 @@ npc_runPrimaryScript_809ebdc:
 	ldr r7, =NPCCommandsJumptable
 	ldr r7, [r7,r0]
 	mov lr, pc
-	bx r7
+	bx r7 // MMBN3W: 0x080F13c6?
 	str r6, [r5,#oOverworldNPCObject_AnimationScriptPtr]
 	b .runScriptCommandLoop
 .done
@@ -1019,7 +1021,8 @@ npc_runSecondaryScriptMaybe_809ebf8:
 	ldr r7, =NPCCommandsJumptable 
 	ldr r7, [r7,r0]
 	mov lr, pc
-	bx r7
+	bx r7 // MMBN3W: 0x080F13c6?
+	// MMBN3W: r6 is 0x0804d01d, for example
 	str r6, [r5,#oOverworldNPCObject_UnkNPCScriptPtr_5c]
 	b .runScriptCommandLoop
 .checkTimer
@@ -1041,6 +1044,7 @@ npc_decrementSecondaryTimer_809ec1c:
 	pop {pc}
 	.balign 4, 0
 	.pool // 809EC2C
+	// MMBN3W: 0x080f13d0
 NPCCommandsJumptable:
 	.word NPCCommand_end+1                                            // 0x0
 	.word NULL                                                        // 0x1
@@ -1239,11 +1243,11 @@ NPCCommand_clear_event_flag:
 	thumb_local_start
 // 0x08
 // set the npc to be active and visible
-NPCCommand_set_active_and_visible:
+NPCCommand_set_active_and_visible::
 	mov r0, #(OBJECT_FLAG_ACTIVE | OBJECT_FLAG_VISIBLE)
 	strb r0, [r5,#oObjectHeader_Flags]
-	add r6, #1
-	mov pc, lr
+	add r6, #1 // 0x0809ee12: 01 36 f7 46
+	mov pc, lr // 0x0809ee14: f7 46
 	thumb_func_end NPCCommand_set_active_and_visible
 
 	thumb_local_start

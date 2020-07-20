@@ -10,7 +10,7 @@
 	u8 Unk_04 // loc=0x4
 	u8 Unk_05 // loc=0x5
 	u16 Unk_06 // loc=0x6
-	.space 0x2
+	u16 Unk_08 // loc=0x8 -- sub_3006440 adds this with parts of sprite ROM data to create oam_2. perhaps this holds the start index of the sprite's tilemap in VRAM. maybe includes obj priority flags too?
 	u16 Unk_0a // loc=0xa
 	.space 0x4
 	u8 Unk_10 // loc=0x12 // also size 2
@@ -22,7 +22,7 @@
 
 	u8 Unk_12 // loc=0x12 // also size 2
 	u8 Unk_13 // loc=0x13
-	u8 Unk_14 // loc=0x14
+	u8 Unk_14 // loc=0x14 // also size 2 // ORd with other things to create oam_2 for sprites. palette and BG priority.
 	u8 Unk_15 // loc=0x15
 	u16 Unk_16 // loc=0x16
 	u32 Unk_18 // loc=0x18

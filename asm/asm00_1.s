@@ -2906,7 +2906,7 @@ loc_80048F2:
 	tst r0, r1
 	beq loc_8004916
 loc_800490A:
-	ldr r0, [sp]
+	ldr r0, [sp] // r0 := off_8004724
 	ldrb r1, [r5,#oOverworldMapObject_Index]
 	lsl r1, r1, #2
 	ldr r0, [r0,r1]

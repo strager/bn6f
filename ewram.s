@@ -859,6 +859,15 @@ dword_200A6A8:: // 0x200a6a8
 	.space 4
 dword_200A6AC:: // 0x200a6ac
 	.space 68
+
+        // struct rotoscale {
+        //   u16 pa; // +0
+        //   u16 pb; // +2
+        //   u16 pc; // +4
+        //   u16 pd; // +6
+        //   ?; // +8
+        //   END // +12
+        // };
 word_200A6F0:: // 0x200a6f0
 	.space 2
 word_200A6F2:: // 0x200a6f2

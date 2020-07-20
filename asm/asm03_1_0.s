@@ -383,8 +383,9 @@ sub_8033B6E:
 	pop {pc}
 	thumb_func_end sub_8033B6E
 
+        // draw the PET HUD on real world overworld screens
 	thumb_local_start
-sub_8033B80:
+sub_8033B80::
 	push {lr}
 	mov r2, #0x18
 	mul r2, r0
@@ -395,9 +396,13 @@ sub_8033B80:
 	ldr r0, dword_8033BAC // =0x80028003
 	lsl r1, r1, #0x10
 	add r0, r0, r1
-	ldr r1, dword_8033BB0 // =0xc790
+	ldr r1, dword_8033BB0 // =0xc790 // tile number and flags
 	mov r2, #1
 	mov r3, #0
+        // r0: oam_0 and oam_1
+        // r1: oam_2
+        // r2: ???
+        // r3: ???
 	bl sub_802FE28 // (u32 a1, u16 a2, int notUsed, int a4) -> void
 	ldrb r0, [r5,#5]
 	add r0, #1
@@ -416,8 +421,9 @@ byte_8033BB8: .byte 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 
 	.byte 0x2, 0x1, 0x0, 0x1, 0x2, 0x3, 0x2, 0x1, 0x0, 0x1, 0x2, 0x3, 0x2, 0x1
 	thumb_func_end sub_8033B80
 
+        // draw the Mega Man face HUD on real world overworld screens
 	thumb_local_start
-sub_8033BE8:
+sub_8033BE8::
 	push {lr}
 	bl GetCurPETNavi // () -> u8
 	mov r4, r0
@@ -438,6 +444,10 @@ loc_8033C02:
 	ldr r1, dword_8033C64 // =0xc79c 
 	mov r2, #1
 	mov r3, #0
+        // r0: oam_0 and oam_1
+        // r1: oam_2
+        // r2: ???
+        // r3: ???
 	bl sub_802FE28 // (u32 a1, u16 a2, int notUsed, int a4) -> void
 	pop {pc}
 	.balign 4, 0
@@ -1284,6 +1294,8 @@ dword_8034408: .word 0x2
 	.word 0x0
 off_8034458: .word palette_3001960
 off_803445C: .word eTileIds2017A04
+
+// bingo! sorta.
 Struct8034460:
 	// seaside 1
 	.word 0x0091, 0x0, 0x0, 0x3, 0x0, 0x0, 0x0, 0x0
@@ -2819,6 +2831,8 @@ off_8035688: .word byte_80525C0
 
 	thumb_func_start applyLayerEffectToOWObject_8035694
 // r0 - coords
+// Outputs:
+// r0: object BG priority (0-3)
 applyLayerEffectToOWObject_8035694:
 	push {r4-r7,lr}
 	mov r5, r0
