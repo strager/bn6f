@@ -22624,7 +22624,7 @@ sub_803189C:
 	ldr r5, off_8031994 // =dword_2013940 
 	ldr r1, [r0] // read header (size)
 	strh r1, [r5,#oUnk_Ex2011a20_Unk_04] // (word_2013944 - 0x2013940)
-	add r0, #4 // skip header
+	add r0, #4 // skip header (size)
 	str r0, [r5,#oUnk_Ex2011a20_UnkPtr_00]
 	mov r0, #0xfe
 	strb r0, [r5,#oUnk_Ex2011a20_Unk_06] // (byte_2013946 - 0x2013940)
